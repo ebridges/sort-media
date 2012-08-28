@@ -44,3 +44,24 @@ sub format_dest_filename {
     # format the filename for the new image as yyyy-mm-dd_hhmmss_n.typ where
     # 'n' is a serial number incremented if the image exists already, or just '1'
 }
+
+sub resolve_tags {
+    my $img = shift;
+    my @tags = @_;
+    my $exifTool = new Image::ExifTool;
+    $exifTool−>ExtractInfo($img);
+    for my $tag (@tags){
+	my $val = $exifTool->GetValue($tag);
+	$val = &trim($val);
+	return $val
+	    if $val;
+    }
+    return undef;
+}
+
+sub trim {
+    my $v = shift;
+    $v =~ s/^\s+//g;
+    $v =~ s/\s+$//g;
+    return length($v) > 0 ? $v : undef;
+}
