@@ -1,11 +1,30 @@
 #!/usr/bin/perl
 
 use strict;
+use warnings;
 use Image::ExifTool qw(:Public);
 use File::Path;
 use File::Copy;
 use constant WD => '/Users/ebridges/Documents/Projects/photo-utils/picture-sorter';
 use constant DEST => 'target/';
+
+my @created_tags = q(
+'CreateDate',
+'datecreate',
+'CreateDate (1)',
+'DateTimeDigitized',
+'DateTimeOriginal',
+'DateTimeOriginal (1)'
+);
+
+my %tag_dateformats = q(
+'CreateDate' => '%Y:%m:%d %H:%M:%S%z',
+'datecreate' => '%Y-%m-%dT%H:%M:%S%z',
+'CreateDate (1)' => '%Y:%m:%d %H:%M:%S%z',
+'DateTimeDigitized' => '%Y:%m:%d %H:%M:%S%z',
+'DateTimeOriginal' => '%Y:%m:%d %H:%M:%S',
+'DateTimeOriginal (1)' => '%Y:%m:%d %H:%M:%S'
+);
 
 chdir WD;
 
@@ -35,8 +54,10 @@ while(<>) {
 }
 
 sub create_date {
-    # TODO
     # extract created date from EXIF data of image and format as yyyy-mm-dd
+    my $image = shift;
+    my $createDate = &resolve_tags($image, @created_tags);
+    return $createDate;
 }
 
 sub format_dest_filename {
@@ -49,14 +70,32 @@ sub resolve_tags {
     my $img = shift;
     my @tags = @_;
     my $exifTool = new Image::ExifTool;
-    $exifTool−>ExtractInfo($img);
+    $exifTool->ExtractInfo($img);
     for my $tag (@tags){
 	my $val = $exifTool->GetValue($tag);
 	$val = &trim($val);
-	return $val
+	return 
+	    format_date(
+		$tag_dateformats{$tag}, 
+		$val
+	    )
 	    if $val;
     }
     return undef;
+}
+
+sub format_date {
+    my $fmt  = shift;
+    my $date = shift;
+    my $t = Time::Piece->strptime($date, $fmt);
+    return $t->ymd;   
+}
+
+sub format_date_time {
+    my $fmt = shift;
+    my $date = shift;
+    my $t = Time::Piece->strptime($date, $fmt);
+    return sprintf("%s_%s", $t->ymd, $t->hms(''));
 }
 
 sub trim {
