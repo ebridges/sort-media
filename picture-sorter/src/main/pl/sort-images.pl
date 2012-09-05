@@ -107,7 +107,41 @@ sub create_date {
     # extract created date from EXIF data of image and format as ISO-8601 format
     my $image = shift;
     my $createDate = &resolve_tags($image, @created_tags);
-    return $createDate;
+
+    if($createDate) {
+	get_logger()->debug("got [$createDate] for [$image].");
+	my $now = localtime;
+	my $t = format_date($createDate, @dateformats);
+	if($t < $now) {
+	    return $t->datetime;
+	} else {
+	    get_logger()->debug("Got a createDate in future, trying to use modification date.");
+	    return modify_date($image);
+	}
+    } else {
+	get_logger()->debug("No createDate found in image, trying to use modification date.");
+	return modify_date($image);
+    }
+}
+
+sub modify_date {
+    get_logger()->debug('modify_date() called.');
+    # extract modify date from EXIF data of image and format as ISO-8601 format
+    my $modifyDate = &resolve_tags($image, @modify_tags);
+
+    if($modifyDate) {
+	get_logger()->debug("got [$modifyDate] for [$image].");
+	my $now = localtime;
+	my $t = format_date($modifyDate, @dateformats);
+	if($t < $now) {
+	    return $t->datetime;
+	} else {
+	    get_logger()->debug("Got a modifyDate image is unreadable.");
+	    return undef;
+	}	
+    } else {
+	return undef;	
+    }
 }
 
 ## format filename as $destdir/$created/yyyy-mm-ddThh:mm:ss_#.typ
@@ -167,11 +201,7 @@ sub resolve_tags {
 	my $val = &trim($value);
 	if($val) {
 	    get_logger()->info("tag [$tag] resolved to [$val]");
-	    return 
-		format_date(
-		    $val,
-		    @dateformats
-		);
+	    return $val;
 	} else {
 	    get_logger()->debug("no value found for tag [$tag]");
 	}
@@ -184,9 +214,7 @@ sub format_date {
     my @fmts  = @_;
     get_logger()->debug("format_date($date, [@fmts]) called.");
     my $t = Time::Piece->strptime($date, @fmts);
-    my $d = $t->datetime;
-    get_logger()->info("Converted [$date] to [$d]");
-    return $d;
+    return $t;
 }
 
 sub trim {
