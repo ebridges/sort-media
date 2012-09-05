@@ -21,7 +21,7 @@ Log::Log4perl->init(LOG_CONFIG);
 
 # only support jpeg since they use EXIF data
 ## TODO: support .thm files
-my @exts = qw(.jpeg .jpg);
+my @exts = qw(.jpeg .jpg .JPEG .JPG);
 
 # look for these tags in this order
 my @created_tags = (
