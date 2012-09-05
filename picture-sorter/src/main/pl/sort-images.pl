@@ -7,17 +7,20 @@ use Time::Piece;
 use File::Path;
 use File::Copy;
 use File::Basename;
-use Log::Log4perl qw(:easy);
+use Log::Log4perl;
 
-use constant LOG_CONFIG => 'log4perl.conf';
 use constant ENABLED => 'yes';
 use constant REMOVE_ORIGINAL => undef;
-use constant WD => '/Users/ebridges/Documents/Projects/photo-utils/picture-sorter';
-use constant DEST => 'target';
+use constant WD => '/home/imgsorter';
+use constant DEST => '/c/photos/incoming';
+use constant LOG_CONFIG => 'etc/log4perl.conf';
+
+chdir WD;
 
 Log::Log4perl->init(LOG_CONFIG);
 
 # only support jpeg since they use EXIF data
+## TODO: support .thm files
 my @exts = qw(.jpeg .jpg);
 
 # look for these tags in this order
@@ -36,8 +39,6 @@ my @dateformats = (
 '%Y:%m:%d %H:%M:%S%z',
 '%Y-%m-%dT%H:%M:%S%z'
 );
-
-chdir WD;
 
 # expect list of FQ filenames of source images.
 IMAGE: while(<>) {
@@ -70,15 +71,21 @@ IMAGE: while(<>) {
 
     if(ENABLED) {
 	my $successful;
-	if(REMOVE_ORIGINAL) {
-	    get_logger()->info("moving [$image] to [$dest_image]");
-	    $successful = move $image, $dest_image;
-	} else {
-	    get_logger()->info("copying [$image] to [$dest_image]");
-	    $successful = copy $image, $dest_image;
-	}
+	get_logger()->info("copying [$image] to [$dest_image]");
+	$successful = copy $image, $dest_image;
+	
 	if(not $successful) {
-	    get_logger()->logdie("unable to migrate [$image] to [$dest_image]: $!");
+	    get_logger()->logdie("unable to copy [$image] to [$dest_image]: $!");
+	}
+
+	$sucessful = undef;
+	if(REMOVE_ORIGINAL) {
+	    get_logger()->info("removing source image [$image] after successful copy.");
+	    $successful = unlink $image;
+	}
+
+	if(not $successful) {
+	    get_logger()->logdie("unable to remove source image [$image]: $!");
 	}
     }
 }
