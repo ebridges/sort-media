@@ -1,23 +1,27 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -w
 
 use strict;
 use warnings;
 use Image::ExifTool qw(:Public);
+use Time::Piece;
 use File::Path;
 use File::Copy;
 use File::Basename;
 use Log::Log4perl qw(:easy);
 
-Log::Log4perl->easy_init($DEBUG);
-
+use constant LOG_CONFIG => 'log4perl.conf';
+use constant ENABLED => 'yes';
+use constant REMOVE_ORIGINAL => undef;
 use constant WD => '/Users/ebridges/Documents/Projects/photo-utils/picture-sorter';
-use constant DEST => 'target/';
+use constant DEST => 'target';
+
+Log::Log4perl->init(LOG_CONFIG);
 
 # only support jpeg since they use EXIF data
 my @exts = qw(.jpeg .jpg);
 
 # look for these tags in this order
-my @created_tags = q(
+my @created_tags = (
 'CreateDate',
 'datecreate',
 'CreateDate (1)',
@@ -26,20 +30,18 @@ my @created_tags = q(
 'DateTimeOriginal (1)'
 );
 
-# these tags appear to use the mapped format
-my %tag_dateformats = q(
-'CreateDate' => '%Y:%m:%d %H:%M:%S%z',
-'datecreate' => '%Y-%m-%dT%H:%M:%S%z',
-'CreateDate (1)' => '%Y:%m:%d %H:%M:%S%z',
-'DateTimeDigitized' => '%Y:%m:%d %H:%M:%S%z',
-'DateTimeOriginal' => '%Y:%m:%d %H:%M:%S',
-'DateTimeOriginal (1)' => '%Y:%m:%d %H:%M:%S'
+# creation dates are stored in the following formats 
+my @dateformats = (
+'%Y:%m:%d %H:%M:%S',
+'%Y:%m:%d %H:%M:%S%z',
+'%Y-%m-%dT%H:%M:%S%z'
 );
 
 chdir WD;
 
 # expect list of FQ filenames of source images.
 IMAGE: while(<>) {
+    chomp;
     ## image filename
     my $image = $_;
 
@@ -49,6 +51,8 @@ IMAGE: while(<>) {
 	    get_logger()->warn("image [$image] is not supported, skipping");
 	    next IMAGE;
 	}
+    } else {
+	get_logger()->info("image accepted for processing: [$image]");
     }
 
     ## extract create date of image, formatted as yyyy-mm-dd
@@ -61,13 +65,21 @@ IMAGE: while(<>) {
 
     my $dest_image = &format_dest_filename(DEST, $created, $suffix);
 
-    die "dest image already exists! ($dest_image) from ($image)"
+    get_logger()->logdie("dest image already exists! ($dest_image) from ($image)")
 	unless not -e $dest_image;
 
-    my $successful = move $image, $dest_image;
-    if(not $successful) {
-	get_logger()->error("unable to move [$image] to [$dest_image]: $!");
-	die("can't create files in destination folder. ($!)");
+    if(ENABLED) {
+	my $successful;
+	if(REMOVE_ORIGINAL) {
+	    get_logger()->info("moving [$image] to [$dest_image]");
+	    $successful = move $image, $dest_image;
+	} else {
+	    get_logger()->info("copying [$image] to [$dest_image]");
+	    $successful = copy $image, $dest_image;
+	}
+	if(not $successful) {
+	    get_logger()->logdie("unable to migrate [$image] to [$dest_image]: $!");
+	}
     }
 }
 
@@ -94,20 +106,19 @@ sub create_date {
 ## format filename as $destdir/$created/yyyy-mm-ddThh:mm:ss_#.typ
 sub format_dest_filename {
     get_logger()->debug('format_dest_filename() called.');
-    # TODO
     # format the filename for the new image as yyyy-mm-dd_hhmmss_n.typ where
     # 'n' is a serial number incremented if the image exists already, or just '01'
     my $docroot = shift;
     my $created = shift;
     my $suffix  = shift;
+    my $date = (split /T/, $created)[0];
 
-    my $destdir = $docroot . '/' . $created;
+    my $destdir = $docroot . '/' . $date;
 
     if(not -e $destdir) {
 	my $successful = mkpath $destdir;
 	if(not $successful) {
-	    get_logger()->error("unable to create dest dir ($destdir): $!\n"); 
-	    die("can't create destination folders. ($!)");
+	    get_logger()->logdie("unable to create dest dir ($destdir): $!\n"); 
 	}
     }
 
@@ -127,8 +138,12 @@ sub make_filename {
 
     # cap recursion at 100 increments
     while($serial < 100 && -e $name) {
-	get_logger()->info("recursing on [$name] since it exists.");
+	get_logger()->debug("recursing on [$name] since it exists.");
 	$name = &make_filename($destdir, $created, ++$serial, $suffix); 
+    }
+
+    if($serial == 100) {
+	get_logger()->logdie("too many duplicate image filenames, unable to create new filename for [$name].");
     }
 
     return $name;
@@ -141,33 +156,39 @@ sub resolve_tags {
     my $exifTool = new Image::ExifTool;
     $exifTool->ExtractInfo($img);
     for my $tag (@tags){
-	my $val = $exifTool->GetValue($tag);
-	$val = &trim($val);
+	my $value = $exifTool->GetValue($tag);
+	my $val = &trim($value);
 	if($val) {
-	    get_logger()->info("found value for tag [$tag]");
+	    get_logger()->info("tag [$tag] resolved to [$val]");
 	    return 
 		format_date(
-		    $tag_dateformats{$tag}, 
-		    $val
+		    $val,
+		    @dateformats
 		);
+	} else {
+	    get_logger()->debug("no value found for tag [$tag]");
 	}
     }
     return undef;
 }
 
 sub format_date {
-    my $fmt  = shift;
     my $date = shift;
-    get_logger()->debug('format_date() called.');
-    my $t = Time::Piece->strptime($date, $fmt);
+    my @fmts  = @_;
+    get_logger()->debug("format_date($date, [@fmts]) called.");
+    my $t = Time::Piece->strptime($date, @fmts);
     my $d = $t->datetime;
-    get_logger()->info("Converted [$date] to [$d] using format [$fmt]");
+    get_logger()->info("Converted [$date] to [$d]");
     return $d;
 }
 
 sub trim {
     my $v = shift;
-    $v =~ s/^\s+//g;
-    $v =~ s/\s+$//g;
-    return length($v) > 0 ? $v : undef;
+    if(defined $v) {
+	$v =~ s/^\s+//g;
+	$v =~ s/\s+$//g;
+	return length($v) > 0 ? $v : undef;
+    } else {
+	return undef;
+    }
 }
