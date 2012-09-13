@@ -11,8 +11,10 @@ use MediaFile;
 
 use constant ENABLED => 'yes';
 use constant REMOVE_ORIGINAL => undef;
-use constant WD => '/home/imgsorter';
-use constant DEST => '/c/photos/incoming';
+#use constant WD => '/home/imgsorter';
+#use constant DEST => '/c/photos/incoming';
+use constant WD => '.';
+use constant DEST => './dest';
 use constant LOG_CONFIG => 'etc/log4perl.conf';
 
 chdir WD;
