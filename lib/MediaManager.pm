@@ -5,6 +5,7 @@ use warnings;
 
 use Image::ExifTool qw(:Public);
 use Log::Log4perl qw(get_logger);
+use Util;
 
 our $LOG = get_logger();
 

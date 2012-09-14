@@ -8,6 +8,8 @@ use File::Basename;
 use File::Copy;
 use File::Path;
 use Time::Piece;
+use MediaManager;
+use Util;
 
 ## dates to use in correcting for bad camera date
 use constant CAMERA_DATE => '2034-04-30T16:14:00';
