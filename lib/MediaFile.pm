@@ -139,11 +139,11 @@ sub copy_to_dest {
     return $status;
 }
 
-## format filepath as $destdir/$created/yyyy-mm-ddThh:mm:ss_#.typ
+## format filepath as $destdir/yyyy-mm-dd/yyyymmdd_hhmmss_nn.typ
 sub format_dest_filepath {
     $LOG->debug('format_dest_filepath() called.');
-    # format the filename for the new image as yyyy-mm-dd_hhmmss_n.typ where
-    # 'n' is a serial number incremented if the image exists already, or just '01'
+    # format the filename for the new image as yyyymmdd_hhmmss_nn.typ where
+    # 'nn' is a serial number incremented if the image exists already, or just '01'
     my $self = shift;
     my $docroot = shift;
 
