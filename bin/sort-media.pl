@@ -9,17 +9,21 @@ use File::Path;
 use Log::Log4perl qw(get_logger);
 use MediaFile;
 
-use constant ENABLED => 'yes';
-use constant REMOVE_ORIGINAL => undef;
-#use constant WD => '/home/imgsorter';
-#use constant DEST => '/c/photos/incoming';
-use constant WD => '.';
-use constant DEST => './dest';
-use constant LOG_CONFIG => 'etc/log4perl.conf';
+use Config::IniFiles;
 
-chdir WD;
+my $env = $ENV{IMGSORTER_ENV};
+my $ini = '../etc/config.ini';
+my $cfg = Config::IniFiles->new( -file => $ini );
 
-Log::Log4perl->init(LOG_CONFIG);
+my $COPY_ENABLED = $cfg->val( $env, 'copy-enabled' );
+my $REMOVE_ORIGINAL = $cfg->val( $env, 'remove-original' );
+my $WORKING_DIR = $cfg->val( $env, 'working-directory' );
+my $COPY_DESTINATION = $cfg->val( $env, 'copy-destination' );
+my $LOGGING_CONFIG = $cfg->val( $env, 'logging-config' );
+
+chdir $WORKING_DIR;
+
+Log::Log4perl->init($LOGGING_CONFIG);
 
 my $LOG = get_logger();
 
@@ -46,12 +50,12 @@ IMAGE: while(<>) {
 	next IMAGE;
     }
 
-    my $dest_image = $mediaFile->format_dest_filepath(DEST);
+    my $dest_image = $mediaFile->format_dest_filepath($COPY_DESTINATION);
 
     $LOG->logdie("dest image already exists! ($dest_image) from ($image)")
 	unless not -e $dest_image;
 
-    if(ENABLED) {
+    if($COPY_ENABLED) {
 	my $successful;
 	$LOG->info("copying [$image] to [$dest_image]");
 	$successful = $mediaFile->copy_to_dest($dest_image);
@@ -61,7 +65,7 @@ IMAGE: while(<>) {
 	}
 
 	$successful = undef;
-	if(REMOVE_ORIGINAL) {
+	if($REMOVE_ORIGINAL) {
 	    $LOG->info("removing source image [$image] after successful copy.");
 	    $successful = unlink $image;
 	    if(not $successful) {
