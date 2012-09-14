@@ -1,5 +1,4 @@
-sort-media
-==========
+# sort-media
 
 Perl script to sort images into a central folder location.
 
@@ -9,13 +8,13 @@ Starting with a heap of unsorted images with proper EXIF creation date tags, it 
 
 (`nn` is a serial number that is there to avoid duplicate name clashes).
 
-# Usage
+## Usage
 
   ```bash
   $ find <srcdir> -iname '*.jpg' -o -iname '*.jpeg' | sort-media.pl
   ```
     
-# Configuration
+## Configuration
 
 * Managed in file `etc/config.ini`
 
@@ -33,7 +32,7 @@ Starting with a heap of unsorted images with proper EXIF creation date tags, it 
 <dd>The location where files are copied to.</dd>
 </dl>
 
-# Environment
+## Environment
 
 * Specified in file `profile`
 
@@ -46,3 +45,7 @@ Starting with a heap of unsorted images with proper EXIF creation date tags, it 
 <dt>IMGSORTER_ENV</dt>
 <dd>Specifies the section of the config to pull from -- either `DEVELOPMENT` or `PRODUCTION`</dd>
 </dl>
+
+## To Do
+
+* Add support for copying videos that have an associated THM metadata file.
