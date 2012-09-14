@@ -6,7 +6,7 @@ Starting with a heap of unsorted images with proper EXIF creation date tags, it 
 
 `${copy-destination}/yyyy-MM-DD/yyyyMMDDTHHmmss_nn.typ`
 
-(`nn` is a serial number that is there to avoid duplicate name clashes).
+(`nn` is a serial number that is there to avoid duplicate name clashes.  [See here for details](https://github.com/ebridges/sort-media/blob/master/lib/MediaFile.pm#L173)).
 
 ## Usage
 
