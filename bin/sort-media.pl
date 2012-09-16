@@ -37,9 +37,10 @@ IMAGE: while(<>) {
     my $valid = $mediaFile->validate();
 
     if($valid) {
-	$LOG->info("image accepted for processing: [$image]");
+	$LOG->debug("image accepted for processing: [$image]");
     } else {
 	$LOG->warn("image type not accepted for processing: [$image]");
+	next IMAGE;
     }
 
     ## extract create date of image, formatted as yyyy-mm-dd
@@ -57,7 +58,7 @@ IMAGE: while(<>) {
 
     if($COPY_ENABLED) {
 	my $successful;
-	$LOG->info("copying [$image] to [$dest_image]");
+	$LOG->debug("copying [$image] to [$dest_image]");
 	$successful = $mediaFile->copy_to_dest($dest_image);
 
 	if(not $successful) {
@@ -66,12 +67,14 @@ IMAGE: while(<>) {
 
 	$successful = undef;
 	if($REMOVE_ORIGINAL) {
-	    $LOG->info("removing source image [$image] after successful copy.");
+	    $LOG->debug("removing source image [$image] after successful copy.");
 	    $successful = unlink $image;
 	    if(not $successful) {
 		$LOG->logdie("unable to remove source image [$image]: $!");
 	    }
+	    $LOG->info("successfully moved [$image] to [$dest_image]");
+	} else {
+	    $LOG->info("successfully copied [$image] to [$dest_image]");
 	}
-	$LOG->info("successfully copied [$image] to [$dest_image]");
     }
 }

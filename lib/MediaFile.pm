@@ -82,7 +82,7 @@ sub create_date {
 	    $self->{createDate} = $self->adjust_date($t);
 	}
     } else {
-	$LOG->warn("No createDate found in image [$image].");
+	$LOG->debug("No createDate found in image [$image].");
     }
     return $self->{createDate};
 }
@@ -117,9 +117,8 @@ sub copy_to_dest {
     $status = copy $self->{srcPath}, $dest;
 
     if($status) {
-	$LOG->info("successfully copied to $dest");
+	$LOG->debug("successfully copied to $dest");
     } else {
-	$LOG->warn("unsuccessfully copied to $dest");
 	return $status;
     }
 
@@ -161,7 +160,7 @@ sub format_dest_filepath {
     }
 
     $self->{destPath} = &make_filepath($destdir, $created, 1, $suffix);
-    $LOG->info("formatted new filepath as [$self->{destPath}]");
+    $LOG->debug("formatted new filepath as [$self->{destPath}]");
 
     return $self->{destPath};
 }

@@ -19,7 +19,7 @@ sub resolve_tags {
 	my $value = $exifTool->GetValue($tag);
 	my $val = &Util::trim($value);
 	if($val) {
-	    $LOG->info("tag [$tag] resolved to [$val]");
+	    $LOG->debug("tag [$tag] resolved to [$val]");
 	    return $val;
 	} else {
 	    $LOG->debug("no value found for tag [$tag]");
