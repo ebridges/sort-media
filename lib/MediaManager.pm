@@ -11,7 +11,7 @@ our $LOG = get_logger();
 
 sub dump_tags {
     my $img = shift;
-    my $info = ImageInfo($file);
+    my $info = ImageInfo($img);
     my %metadata;
     foreach (keys %$info) {
 	$metadata{$_} = $info->{$_};
