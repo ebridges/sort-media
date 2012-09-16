@@ -9,6 +9,26 @@ use Util;
 
 our $LOG = get_logger();
 
+sub dump_tags {
+    my $img = shift;
+    my $info = ImageInfo($file);
+    my %metadata;
+    foreach (keys %$info) {
+	$metadata{$_} = $info->{$_};
+    }
+    \%metadata;
+}
+
+sub dump_tags_trace {
+    my $img = shift;
+    my $md = dump_tags($img);
+    my $buffer = '';
+    for (sort keys %$md) {
+	$buffer .= "\t[$_]:[$$md{$_}]\n";
+    }
+    $LOG->trace("All metadata for image [$img]:\n$buffer");
+}
+
 sub resolve_tags {
     my $img = shift;
     my @tags = @_;

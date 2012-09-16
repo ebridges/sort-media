@@ -70,6 +70,10 @@ sub create_date {
     my $image = $self->{srcPath};
     my $dateObject = &MediaManager::resolve_tags($image, @created_tags);
 
+    if($LOG->is_trace()) {
+	MediaManager::dump_tags_trace($image);
+    }
+
     $self->{createDate} = undef;
     if($dateObject) {
 	$LOG->debug("got [$dateObject] for [$image].");
