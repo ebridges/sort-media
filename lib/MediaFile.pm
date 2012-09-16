@@ -129,7 +129,7 @@ sub copy_to_dest {
     }
 
     if($self->{hasAdjustment}) {
-	$LOG->warn("image requires adjustment, updating create date tags for photo [$dest] to be [$self->{correctedDate}]");
+	$LOG->debug("image requires adjustment, updating create date tags for photo [$dest] to be [$self->{correctedDate}]");
 	$status =  &MediaManager::update_tags(
 	    $self->{destPath},
 	    $self->{correctedDate},
