@@ -27,6 +27,8 @@ Log::Log4perl->init($LOGGING_CONFIG);
 
 my $LOG = get_logger();
 
+my $CNT = 0;
+
 # expect list of FQ filenames of source images.
 IMAGE: while(<>) {
     chomp;
@@ -77,4 +79,8 @@ IMAGE: while(<>) {
 	    $LOG->info("successfully copied [$image] to [$dest_image]");
 	}
     }
+
+    $CNT++;
 }
+
+$LOG->warn("OK: sorting complete on $CNT media files");
