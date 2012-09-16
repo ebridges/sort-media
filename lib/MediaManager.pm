@@ -57,6 +57,8 @@ sub update_tags {
     my $exifTool = new Image::ExifTool;
     $exifTool->ExtractInfo($img);
     for my $tag (@tags){
+	next 
+	    if $tag =~ m/\s+/;
 	my $errmsg;
 	my $success;
 	$LOG->debug("setting tag [$tag] to value [$val] on [$img]");
