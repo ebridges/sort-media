@@ -62,7 +62,7 @@ sub validate {
 
 # Returns and ISO8601 formatted string representing the creation date of the image.
 sub create_date {
-    $LOG->debug('create_date() called.');
+    $LOG->trace('create_date() called.');
     # extract created date from EXIF data of image and format as ISO-8601 format
     my $self = shift;
     my $image = $self->{srcPath};
@@ -140,7 +140,7 @@ sub copy_to_dest {
 
 ## format filepath as $destdir/yyyy-mm-dd/yyyymmdd_hhmmss_nn.typ
 sub format_dest_filepath {
-    $LOG->debug('format_dest_filepath() called.');
+    $LOG->trace('format_dest_filepath() called.');
     # format the filename for the new image as yyyymmdd_hhmmss_nn.typ where
     # 'nn' is a serial number incremented if the image exists already, or just '01'
     my $self = shift;

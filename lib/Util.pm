@@ -11,7 +11,7 @@ our $LOG = get_logger();
 sub parse_date {
     my $date = shift;
     my @fmts  = @_;
-    $LOG->debug("format_date($date, [@fmts]) called.");
+    $LOG->trace("format_date($date, [@fmts]) called.");
     my $t = Time::Piece->strptime($date, @fmts);
     return $t;
 }

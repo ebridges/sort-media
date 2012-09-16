@@ -12,7 +12,7 @@ our $LOG = get_logger();
 sub resolve_tags {
     my $img = shift;
     my @tags = @_;
-    $LOG->debug("resolve_tags('$img') called.");
+    $LOG->trace("resolve_tags('$img') called.");
     my $exifTool = new Image::ExifTool;
     $exifTool->ExtractInfo($img);
     for my $tag (@tags){
@@ -33,7 +33,7 @@ sub update_tags {
     my $value = shift;
     my $val = $value->datetime; # iso8601 format
     my @tags = @_;
-    $LOG->debug("update_tags('$img') called.");
+    $LOG->trace("update_tags('$img') called.");
     my $exifTool = new Image::ExifTool;
     $exifTool->ExtractInfo($img);
     for my $tag (@tags){
