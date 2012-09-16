@@ -74,13 +74,13 @@ IMAGE: while(<>) {
 	    if(not $successful) {
 		$LOG->logdie("unable to remove source image [$image]: $!");
 	    }
-	    $LOG->info("successfully moved [$image] to [$dest_image]");
+	    $LOG->info("OK: mv [$image] : [$dest_image]");
 	} else {
-	    $LOG->info("successfully copied [$image] to [$dest_image]");
+	    $LOG->info("OK: cp [$image] : [$dest_image]");
 	}
     }
 
     $CNT++;
 }
 
-$LOG->warn("OK: sorting complete on $CNT media files");
+$LOG->warn("OK: $CNT files sorted");
