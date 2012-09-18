@@ -50,4 +50,5 @@ Starting with a heap of unsorted images with proper EXIF creation date tags, it 
 
 * Add support for copying videos that have an associated THM metadata file.
 * Remove functionality [here](https://github.com/ebridges/sort-media/blob/master/lib/MediaFile.pm#L90) which adjusts photos taken during an extended period of time where our camera had the wrong date.
+* Change to log deleted files to a flatfile, that can be read by another process to do the physical delete.
 
