@@ -24,12 +24,9 @@ my @valid_extensions = qw(.jpeg .jpg .JPEG .JPG);
 # look for these tags in this order
 my @created_tags = (
   'CreateDate',
-  'CreateDate (1)',
-  'Create Date',
   'DateTimeDigitized',
-  'Date/Time Original',
   'DateTimeOriginal',
-  'DateTimeOriginal (1)'
+  'FileModifyDate'
 );
 
 # creation dates are stored in the following formats 
