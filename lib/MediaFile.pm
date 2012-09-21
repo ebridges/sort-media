@@ -34,6 +34,7 @@ my $ISO_8601 = '%Y-%m-%dT%H:%M:%S';
 my @dateformats = (
   '%Y:%m:%d %H:%M:%S',
   '%Y:%m:%d %H:%M:%S%z',
+  '%Y:%m:%d %H:%M%z',
   $ISO_8601
 );
 
@@ -66,6 +67,10 @@ sub create_date {
     my $self = shift;
     my $image = $self->{srcPath};
     my $dateObject = &MediaManager::resolve_tags($image, @created_tags);
+
+    if($dateObject eq '0000:00:00 00:00:00') {
+	return undef;
+    }
 
     if($LOG->is_trace()) {
 	MediaManager::dump_tags_trace($image);

@@ -8,7 +8,7 @@ use File::Copy;
 use File::Path;
 use Log::Log4perl qw(get_logger);
 use MediaFile;
-
+use Manifest::File;
 use Config::IniFiles;
 
 my $env = $ENV{IMGSORTER_ENV};
@@ -20,6 +20,7 @@ my $REMOVE_ORIGINAL = $cfg->val( $env, 'remove-original' );
 my $WORKING_DIR = $cfg->val( $env, 'working-directory' );
 my $COPY_DESTINATION = $cfg->val( $env, 'copy-destination' );
 my $LOGGING_CONFIG = $cfg->val( $env, 'logging-config' );
+my $REPOSITORY_URI = $cfg->val( $env, 'repository-uri' );
 
 chdir $WORKING_DIR;
 
@@ -27,10 +28,20 @@ Log::Log4perl->init($LOGGING_CONFIG);
 
 my $LOG = get_logger();
 
-my $CNT = 0;
+my $user = shift;
 
-# expect list of FQ filenames of source images.
-IMAGE: while(<>) {
+die_usage()
+    unless $user;
+
+my $manifest = File->new($REPOSITORY_URI . '/' . $user);
+
+my @files = @{ $manifest->read() };
+my $TOTAL = scalar @files;
+my $COUNT = 0;
+
+$LOG->info("beginning processing of $TOTAL files.");
+
+IMAGE: for(@files) {
     chomp;
     ## image filename
     my $image = $_;
@@ -42,6 +53,7 @@ IMAGE: while(<>) {
 	$LOG->debug("image accepted for processing: [$image]");
     } else {
 	$LOG->warn("image type not accepted for processing: [$image]");
+	$manifest->log_unsuccessful($image);
 	next IMAGE;
     }
 
@@ -50,6 +62,7 @@ IMAGE: while(<>) {
 
     if(not $ok) {
 	$LOG->warn("unable to extract create date for image [$image]");
+	$manifest->log_unsuccessful($image);
 	next IMAGE;
     }
 
@@ -64,23 +77,33 @@ IMAGE: while(<>) {
 	$successful = $mediaFile->copy_to_dest($dest_image);
 
 	if(not $successful) {
-	    $LOG->logdie("unable to copy [$image] to [$dest_image]: $!");
+	    $manifest->log_unsuccessful($image);
+	    $LOG->error("unable to copy [$image] to [$dest_image]: $!");
+	} else {
+	    $COUNT++;
 	}
 
 	$successful = undef;
 	if($REMOVE_ORIGINAL) {
-	    $LOG->debug("removing source image [$image] after successful copy.");
-	    $successful = unlink $image;
-	    if(not $successful) {
-		$LOG->logdie("unable to remove source image [$image]: $!");
-	    }
+	    $LOG->debug("marking source image [$image] for removal after successful copy.");
+	    # $successful = unlink $image;
+	    # if(not $successful) {
+	    # 	$LOG->logdie("unable to remove source image [$image]: $!");
+	    # }
+	    $manifest->log_successful($image);
 	    $LOG->info("OK: mv [$image] : [$dest_image]");
 	} else {
 	    $LOG->info("OK: cp [$image] : [$dest_image]");
 	}
     }
 
-    $CNT++;
 }
 
-$LOG->warn("OK: $CNT files sorted");
+$manifest->write();
+
+$LOG->warn("OK: $COUNT/$TOTAL files sorted");
+
+sub die_usage {
+    my $mesg = "Usage: $0 [useraccount]\n";
+    die $mesg; 
+}
