@@ -68,10 +68,6 @@ sub create_date {
     my $image = $self->{srcPath};
     my $dateObject = &MediaManager::resolve_tags($image, @created_tags);
 
-    if($dateObject eq '0000:00:00 00:00:00') {
-	return undef;
-    }
-
     if($LOG->is_trace()) {
 	MediaManager::dump_tags_trace($image);
     }
@@ -81,6 +77,11 @@ sub create_date {
 	$LOG->debug("got [$dateObject] for [$image].");
 	my $now = localtime;
 	my $t = &Util::parse_date($dateObject, @dateformats);
+
+	if(not defined $t or $t eq '0000:00:00 00:00:00') {
+	    return undef;
+	}
+
 	if($t <= $now) {
 	    # i.e.: create date is not in the future
 	    $self->{createDate} = $t;
