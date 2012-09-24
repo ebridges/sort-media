@@ -4,10 +4,10 @@ use base 'Manifest';
 use strict;
 use warnings;
 
-use constant IPUT => 'input';
-use constant OPUT => 'output';
-use constant EPUT => 'errors';
-use constant DBFILE => 'manifest.txt';
+use constant IPUT => 'incoming.mf';
+use constant OPUT => 'outgoing.mf';
+use constant EPUT => 'errors.mf';
+
 
 use Log::Log4perl qw(get_logger);
 
@@ -23,25 +23,26 @@ sub new {
 sub inputfile {
     my $self = shift;
     my $root = $self->{manifest_uri};
-    return $root . '/' . IPUT . '/' . DBFILE;
+    return $root . '/' . IPUT ;
 }
 
 sub outputfile {
     my $self = shift;
     my $root = $self->{manifest_uri};
-    return $root . '/' . OPUT . '/' . DBFILE;
+    return $root . '/' . OPUT ;
 }
 
 sub errorfile {
     my $self = shift;
     my $root = $self->{manifest_uri};
-    return $root . '/' . EPUT . '/' . DBFILE;
+    return $root . '/' . EPUT ;
 }
 
 sub read {
     my $self = shift;
     my $file = $self->inputfile();
-    open FILE, $file or $LOG->logdie("unable to open $file: $!");
+    open FILE, $file 
+	or $LOG->logdie("unable to open $file: $!");
     my @files = <FILE>;
     close FILE;
     chomp @files;
@@ -54,15 +55,21 @@ sub write {
     my $ofile = $self->outputfile();
     my $efile = $self->errorfile();
     my $ifile = $self->inputfile();
-    my $ecnt = $self->_write($efile, @{$self->{'unsuccessful'}});
-    my $ocnt = $self->_write($ofile, @{$self->{'successful'}});
+    
+    my $ecnt = 0;
+    $ecnt = $self->_write($efile, @{$self->{'unsuccessful'}})
+	if($self->cnt_unsuccessful() > 0);
+
+    my $ocnt = 0;
+    $ocnt = $self->_write($ofile, @{$self->{'successful'}})
+	if($self->cnt_successful() > 0);
     
     # scalar context gives size of array
     my $icnt = $self->{inputfiles};
     
     $LOG->trace("$ocnt + $ecnt == $icnt");
     if($icnt == ($ocnt + $ecnt)) {
-	my $err = $self->_truncate($ifile);
+	$self->_truncate($ifile);
     } else {
         $LOG->logwarn("warning: not all input files were processed.");
     }
@@ -71,7 +78,9 @@ sub write {
 sub _truncate {
     my $self = shift;
     my $file = shift;
-    return $self->_write($file);
+    open FILE, ">$file"
+	or $LOG->logdie("unable to truncate $file: $!");
+    close FILE;
 }
 
 sub _write {
