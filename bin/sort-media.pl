@@ -3,7 +3,6 @@
 use strict;
 use warnings;
 
-use Time::Piece;
 use File::Copy;
 use File::Path;
 use Log::Log4perl qw(get_logger);
