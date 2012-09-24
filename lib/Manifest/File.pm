@@ -79,7 +79,17 @@ sub _write {
     my $file = shift;
     my @list = @_;
     my $i = 0;
-    open FILE, ">$file" or $LOG->logdie("unable to truncate $file: $!");
+
+    my $mode;
+
+    if( -e $file ) {
+	$mode = '>>';
+    } else {
+	$mode = '>';
+    }
+
+    open FILE, "$mode$file" 
+	or $LOG->logdie("unable to open $file in mode ($mode): $!");
     for(@list) {
 	$LOG->trace("writing $_ to $file");
 	print FILE $_ . "\n";
