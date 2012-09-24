@@ -29,6 +29,24 @@ sub write {
     $LOG->logdie("Manifest::write() is abstract\n");
 }
 
+sub cnt_successful {
+    my $self = shift;
+    if(defined($self->{'successful'})) {
+	return scalar @{$self->{'successful'}};
+    } else {
+	return 0;
+    }
+}
+
+sub cnt_unsuccessful {
+    my $self = shift;
+    if(defined($self->{'unsuccessful'})) {
+	return scalar @{$self->{'unsuccessful'}};
+    } else {
+	return 0;
+    }
+}
+
 sub log_successful {
     my $self = shift;
     my $file = shift;
