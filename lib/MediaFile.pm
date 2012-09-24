@@ -7,7 +7,7 @@ use Log::Log4perl qw(get_logger);
 use File::Basename;
 use File::Copy;
 use File::Path;
-use Time::Piece;
+
 use MediaManager;
 use Util;
 
@@ -60,29 +60,25 @@ sub validate {
     1;
 }
 
-# Returns and ISO8601 formatted string representing the creation date of the image.
+# Returns a DateTime object representing the creation date of the image.
 sub create_date {
     $LOG->trace('create_date() called.');
     # extract created date from EXIF data of image and format as ISO-8601 format
     my $self = shift;
     my $image = $self->{srcPath};
-    my $dateObject = &MediaManager::resolve_tags($image, @created_tags);
+    my $dateString = &MediaManager::resolve_tags($image, @created_tags);
 
     if($LOG->is_trace()) {
 	MediaManager::dump_tags_trace($image);
     }
 
     $self->{createDate} = undef;
-    if($dateObject) {
-	$LOG->debug("got [$dateObject] for [$image].");
-	my $now = localtime;
-	my $t = &Util::parse_date($dateObject, @dateformats);
+    if($dateString) {
+	$LOG->debug("got [$dateString] for [$image].");
 
-	if(not defined $t or $t eq '0000:00:00 00:00:00') {
-	    return undef;
-	}
+	my $t = &Util::parse_date($dateString, @dateformats);
 
-	if($t <= $now) {
+	if(&Util::is_before_now($t)) {
 	    # i.e.: create date is not in the future
 	    $self->{createDate} = $t;
 	} else {
@@ -102,12 +98,11 @@ sub adjust_date {
 
     my $image = $self->{srcPath};
 
-    my $camera_date = Time::Piece->strptime(CAMERA_DATE, $ISO_8601);
-    my $true_date_asof_camera_date = Time::Piece->strptime(CURRENT_DATE, $ISO_8601);
+    my $diff = &Util::date_diff( CURRENT_DATE, CAMERA_DATE );
 
-    my $adjustment = $camera_date - $true_date_asof_camera_date;
+    my $corrected_date = &Util::adjust_date($wrong_date, $diff);
 
-    $self->{correctedDate} = ($wrong_date - $adjustment);
+    $self->{correctedDate} = $corrected_date;
     $self->{hasAdjustment} = 1;
 
     return $self->{correctedDate};
@@ -157,7 +152,7 @@ sub format_dest_filepath {
 
     my $created = $self->{createDate};
     my $suffix  = lc $self->{srcSuffix};
-    my $date = $created->ymd;
+    my $date = $created->ymd();
 
     my $destdir = $docroot . '/' . $date;
 
@@ -184,9 +179,11 @@ sub make_filepath {
     my $serial = shift;
     my $suffix = shift;
 
-    $created->date_separator('');
-    $created->time_separator('');
-    my $name = $destdir . '/' . $created->datetime . '_' . sprintf('%02d', $serial) . $suffix;
+    my $date = $created->ymd('');
+    my $time = $created->hms('');
+    my $datetime = $date . 'T' . $time;
+
+    my $name = $destdir . '/' . $datetime . '_' . sprintf('%02d', $serial) . $suffix;
 
     # cap recursion at 100 increments
     while($serial < 100 && -e $name) {
@@ -198,8 +195,6 @@ sub make_filepath {
 	$LOG->logdie("too many duplicate image filenames, unable to create new filename for [$name].");
     }
 
-    $created->time_separator(':');
-    $created->date_separator('-');
     return $name;
 }
 
