@@ -18,10 +18,25 @@ my @files = <F>;
 close F;
 
 chomp @files;
+my @not_ok;
 for(@files) {
     next
 	if(-d);
 #    print "deleting file [$_]\n";
-    warn "unable to delete [$_]: $!\n"
-	unless unlink;
+
+    my $ok = unlink;
+    
+    if(not $ok) {
+	warn "unable to delete [$_]: $!\n";
+	push @not_ok, $_;
+    } 
 }
+
+open F, ">$delete_manifest"
+    or die "unable to truncate deletion manifest: $!\n";
+if(scalar @not_ok) {
+    for(@not_ok){
+	print F "$_\n";
+    }
+}
+close F;
