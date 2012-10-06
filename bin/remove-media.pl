@@ -3,11 +3,12 @@
 use strict;
 use warnings;
 
-my $delete_manifest = shift;
+my $user = shift;
 
-if(not defined $delete_manifest) {
-    $delete_manifest = '/var/local/db/sort-media/'.$ENV{USER}.'/outgoing.mf';
-}
+die "usage: $0 [username]\n"
+    unless defined $user;
+
+my $delete_manifest = '/var/local/db/sort-media/'.$user.'/outgoing.mf';
 
 die "unable to locate list of files to delete at [$delete_manifest]: $!\n"
 	unless -e $delete_manifest;
