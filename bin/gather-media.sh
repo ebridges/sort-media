@@ -3,7 +3,7 @@
 user=$1
 shift
 dirs=$@
-output=/var/local/db/${user}/incoming.mf
+output=/var/local/db/sort-media/${user}/incoming.mf
 
 if [ -z "${dirs}" ];
 then
