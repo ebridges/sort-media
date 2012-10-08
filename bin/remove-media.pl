@@ -34,10 +34,10 @@ for(@files) {
 }
 
 open F, ">$delete_manifest"
-    or die "unable to truncate deletion manifest: $!\n";
+    or die "unable to truncate deletion manifest [$delete_manifest]: $!\n";
 if(scalar @not_ok) {
     for(@not_ok){
-	print F "$_\n";
+	print F "NOK\t$_\n";
     }
 }
 close F;
