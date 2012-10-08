@@ -25,6 +25,9 @@ for(@files) {
 	if(-d);
 #    print "deleting file [$_]\n";
 
+    next
+	if(/^NOK/);
+
     my $ok = unlink;
     
     if(not $ok) {
