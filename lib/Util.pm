@@ -44,7 +44,7 @@ sub adjust_date {
     my $dateOrig = shift;
     my $duration = shift;    
     my $copy = $dateOrig->clone();
-    my $adjusted = $copy->add_duration($duration);
+    my $adjusted = $copy->subtract_duration($duration);
     return $adjusted;
 }
 
