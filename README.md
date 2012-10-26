@@ -13,8 +13,8 @@ Each copied file is named according to this pattern:
 
 <table border=“0”>
 <tr>
-<td>User account</td>
-<td>Command</td>
+<th>User account</th>
+<th>Command</th>
 </tr>
 <tr>
 <td><tt>joeuser</tt></td>
