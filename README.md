@@ -75,7 +75,7 @@ Each copied file is named according to this pattern:
 ## To Do
 
 * Add support for copying videos that have an associated THM metadata file.
-* Remove functionality [here](https://github.com/ebridges/sort-media/blob/master/lib/MediaFile.pm#L90) which adjusts photos taken during an extended period of time where our camera had the wrong date.
+* Remove functionality [here](https://github.com/ebridges/sort-media/blob/master/lib/MediaFile.pm#L95) which adjusts photos taken during an extended period of time where our camera had the wrong date.
 * Change sort-media.pl to accept multiple usernames.
 * <strike>Change to log deleted files to a flatfile, that can be read by another process to do the physical delete.</strike>
 
