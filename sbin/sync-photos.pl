@@ -20,7 +20,8 @@ if (defined $ENV{IMGSORTER_ENV}) {
 my $ini = 'etc/config.ini';
 my $cfg = Config::IniFiles->new( -file => $ini );
 
-my $COPY_DESTINATION = $cfg->val( $env, 'copy-destination' );
+my $COPY_IMAGE_DESTINATION = $cfg->val( $env, 'copy-image-destination' );
+my $COPY_VIDEO_DESTINATION = $cfg->val( $env, 'copy-video-destination' );
 my $LOGGING_CONFIG = $cfg->val( $env, 'logging-config' );
 my $LOCAL_DIR = $cfg->val( $env, 'local-directory' );
 my $REMOTE_DIR = $cfg->val( $env, 'remote-directory' );
@@ -72,7 +73,14 @@ IMAGE: for(@files) {
 	next IMAGE;
     }
 
-    my $dest_image = $mediaFile->format_dest_filepath($COPY_DESTINATION);
+    my $destination_dir = undef;
+    if($mediaFile->is_image()) {
+	$destination_dir = $COPY_IMAGE_DESTINATION;
+    } else {
+	$destination_dir = $COPY_VIDEO_DESTINATION;
+    }
+    
+    my $dest_image = $mediaFile->format_dest_filepath($destination_dir);
     $LOG->logdie("dest image already exists! ($dest_image) from ($image)")
 	unless not -e $dest_image;
 
