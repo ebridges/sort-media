@@ -52,12 +52,13 @@ sub new {
 sub validate {
     my $self = shift;
     my ($filename, $directories, $suffix) = fileparse($self->{srcPath}, qr/\.[^.]*/);
-    if(not grep @valid_extensions, $suffix) {
-	return undef;
+    if(grep {/$suffix/} @valid_extensions) {
+	$self->{srcFilename} = $filename;
+	$self->{srcSuffix} = $suffix;
+	1;
     }
-    $self->{srcFilename} = $filename;
-    $self->{srcSuffix} = $suffix;
-    1;
+    undef;
+}
 }
 
 # Returns a DateTime object representing the creation date of the image.
