@@ -20,6 +20,7 @@ our $LOG = get_logger();
 # only support jpeg since they use EXIF data
 ## TODO: support .thm files
 my @valid_extensions = qw(.jpeg .jpg .JPEG .JPG);
+my @image_extensions = qw(.jpeg .jpg);
 
 # look for these tags in this order
 my @created_tags = (
@@ -59,6 +60,15 @@ sub validate {
     }
     undef;
 }
+
+sub is_image {
+    my $self = shift;
+    my ($filename, $directories, $suffix) = fileparse($self->{srcPath}, qr/\.[^.]*/);
+    $suffix = lc($suffix);
+    if(grep {/$suffix/} @image_extensions) {
+	return 1;
+    }
+    undef;
 }
 
 # Returns a DateTime object representing the creation date of the image.
