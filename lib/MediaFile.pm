@@ -19,7 +19,7 @@ our $LOG = get_logger();
 
 # only support jpeg since they use EXIF data
 ## TODO: support .thm files
-my @valid_extensions = qw(.jpeg .jpg .JPEG .JPG);
+my @valid_extensions = qw(.jpeg .jpg .JPEG .JPG .mp4 .MP4);
 my @image_extensions = qw(.jpeg .jpg);
 
 # look for these tags in this order
@@ -27,6 +27,7 @@ my @created_tags = (
   'CreateDate',
   'DateTimeDigitized',
   'DateTimeOriginal',
+  'MediaCreateDate',
   'FileModifyDate'
 );
 
