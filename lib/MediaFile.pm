@@ -94,8 +94,8 @@ sub create_date {
 	    $self->{createDate} = $t;
 	} else {
 	    # create date is in the future and needs adjustment
-	    $LOG->debug("Got a createDate in future, assume camera had wrong date.");
-	    $self->{createDate} = $self->adjust_date($t);
+	    $LOG->logdie("Got a createDate in future, assume camera had wrong date.");
+#	    $self->{createDate} = $self->adjust_date($t);
 	}
     } else {
 	$LOG->debug("No createDate found in image [$image].");
