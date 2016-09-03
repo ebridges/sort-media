@@ -103,13 +103,14 @@ my $rclone_rm="$RCLONE_PATH delete '%s:%s' --config $CONNECT_CONFIG --verbose --
 for (@copied) {
     chomp;
     my $cmd = sprintf $rclone_rm, $REMOTE_DIR, $_;
-    $LOG->debug("deleting [$REMOTE_DIR/$_] from remote.");
+    $LOG->info("deleting [$REMOTE_DIR/$_] from remote.");
     `$cmd`;
     $LOG->logdie("Error when deleting [$REMOTE_DIR/$_] from remote: $?")
 	if $?;
 }
 
 my $PURGE = undef;
+$LOG->info("removing local sync directory [$LOCAL_DIR]");
 remove_tree $LOCAL_DIR
     if $PURGE;
 
