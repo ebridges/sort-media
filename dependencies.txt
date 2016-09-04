@@ -1,0 +1,4 @@
+DateTime
+Config::IniFiles
+Image::ExifTool
+Log::Log4perl

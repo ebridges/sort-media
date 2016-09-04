@@ -19,13 +19,15 @@ our $LOG = get_logger();
 
 # only support jpeg since they use EXIF data
 ## TODO: support .thm files
-my @valid_extensions = qw(.jpeg .jpg .JPEG .JPG);
+my @valid_extensions = qw(.jpeg .jpg .JPEG .JPG .mp4 .MP4 .avi .AVI);
+my @image_extensions = qw(.jpeg .jpg);
 
 # look for these tags in this order
 my @created_tags = (
   'CreateDate',
   'DateTimeDigitized',
   'DateTimeOriginal',
+  'MediaCreateDate',
   'FileModifyDate'
 );
 
@@ -34,10 +36,10 @@ my $ISO_8601 = '%Y-%m-%dT%H:%M:%S';
 my @dateformats = (
   '%Y:%m:%d %H:%M:%S',
   '%Y:%m:%d %H:%M:%S%z',
-  '%Y:%m:%d %H:%M%z',
+  '%Y:%m:%d %H:%M%z', 
+  '%a %b %d %H:%M:%S %Y', #  Fri Dec 30 18:29:18 2005
   $ISO_8601
 );
-
 
 sub new {
     my $class = shift;
@@ -52,12 +54,22 @@ sub new {
 sub validate {
     my $self = shift;
     my ($filename, $directories, $suffix) = fileparse($self->{srcPath}, qr/\.[^.]*/);
-    if(not grep @valid_extensions, $suffix) {
-	return undef;
+    if(grep {/$suffix/} @valid_extensions) {
+	$self->{srcFilename} = $filename;
+	$self->{srcSuffix} = $suffix;
+	return 1;
     }
-    $self->{srcFilename} = $filename;
-    $self->{srcSuffix} = $suffix;
-    1;
+    undef;
+}
+
+sub is_image {
+    my $self = shift;
+    my ($filename, $directories, $suffix) = fileparse($self->{srcPath}, qr/\.[^.]*/);
+    $suffix = lc($suffix);
+    if(grep {/$suffix/} @image_extensions) {
+	return 1;
+    }
+    undef;
 }
 
 # Returns a DateTime object representing the creation date of the image.
@@ -76,15 +88,23 @@ sub create_date {
     if($dateString) {
 	$LOG->debug("got [$dateString] for [$image].");
 
-	my $t = &Util::parse_date($dateString, @dateformats);
+
+    my $t = undef;
+    if ($dateString =~ m/^[0-9]{10}$/) {
+        $LOG->debug("dateString is a timestamp");
+        $t = &Util::convert_from_epoch($dateString + 0); # force to numeric
+    } else {
+        $LOG->debug("dateString is human readable string");
+	    $t = &Util::parse_date($dateString, @dateformats);
+    }
 
 	if(&Util::is_before_now($t)) {
 	    # i.e.: create date is not in the future
 	    $self->{createDate} = $t;
 	} else {
 	    # create date is in the future and needs adjustment
-	    $LOG->debug("Got a createDate in future, assume camera had wrong date.");
-	    $self->{createDate} = $self->adjust_date($t);
+	    $LOG->logdie("Got a createDate in future, assume camera had wrong date.");
+#	    $self->{createDate} = $self->adjust_date($t);
 	}
     } else {
 	$LOG->debug("No createDate found in image [$image].");
