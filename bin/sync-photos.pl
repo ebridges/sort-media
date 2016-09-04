@@ -62,39 +62,39 @@ IMAGE: for(@files) {
     
     my $valid = $mediaFile->validate();
     if (not $valid) {
-	$LOG->logwarn("image type not accepted for processing: [$image]");
-	next IMAGE;
+        $LOG->logwarn("image type not accepted for processing: [$image]");
+        next IMAGE;
     } else {
-	$LOG->debug("image accepted for processing: [$image]");
+        $LOG->debug("image accepted for processing: [$image]");
     }
 
     ## extract create date of image, formatted as yyyy-mm-dd
     my $ok = $mediaFile->create_date();
     if(not $ok) {
-	$LOG->logwarn("unable to extract create date for image [$image]");
-	next IMAGE;
+        $LOG->logwarn("unable to extract create date for image [$image]");
+        next IMAGE;
     }
 
     my $destination_dir = undef;
     if($mediaFile->is_image()) {
-	$destination_dir = $COPY_IMAGE_DESTINATION;
+        $destination_dir = $COPY_IMAGE_DESTINATION;
     } else {
-	$destination_dir = $COPY_VIDEO_DESTINATION;
+        $destination_dir = $COPY_VIDEO_DESTINATION;
     }
     
     my $dest_image = $mediaFile->format_dest_filepath($destination_dir);
     $LOG->logdie("dest image already exists! ($dest_image) from ($image)")
-	unless not -e $dest_image;
+        unless not -e $dest_image;
 
     $LOG->debug("copying [$image] to [$dest_image]");
     
     my $successful = $mediaFile->copy_to_dest($dest_image);
     if($successful) {
-	$COUNT++;
-	push @copied, $image;
+        $COUNT++;
+        push @copied, $image;
     } else {
-	$LOG->error("unable to copy [$image] to [$dest_image]: $!");
-	next IMAGE;
+        $LOG->error("unable to copy [$image] to [$dest_image]: $!");
+        next IMAGE;
     }
 }
 
@@ -113,7 +113,7 @@ for (@copied) {
     $LOG->info("deleting [$REMOTE_DIR/$_] from remote.");
     `$cmd`;
     $LOG->logdie("Error when deleting [$REMOTE_DIR/$_] from remote: $?")
-	if $?;
+        if $?;
 }
 
 if ($PURGE_LOCAL_DIR) {
