@@ -6,7 +6,7 @@ use warnings;
 use Config::IniFiles;
 
 my $env = $ENV{IMGSORTER_ENV};
-my $ini = '../etc/config.ini';
+my $ini = 'etc/config.ini';
 my $cfg = Config::IniFiles->new( 
     -file => $ini,
     -default => 'Default'
