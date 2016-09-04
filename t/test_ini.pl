@@ -12,18 +12,10 @@ my $cfg = Config::IniFiles->new(
     -default => 'Default'
     );
 
-my $COPY_ENABLED = $cfg->val( $env, 'copy-enabled' );
-my $REMOVE_ORIGINAL = $cfg->val( $env, 'remove-original' );
-my $WORKING_DIR = $cfg->val( $env, 'working-directory' );
-my $COPY_DESTINATION = $cfg->val( $env, 'copy-destination' );
-my $LOGGING_CONFIG = $cfg->val( $env, 'logging-config' );
-
-print "copy-enabled: " .  $COPY_ENABLED . "\n";
-print "remove-original: " . $REMOVE_ORIGINAL . "\n";
-print "working-directory: " . $WORKING_DIR . "\n";
-print "copy-destination: " . $COPY_DESTINATION . "\n";
-print "logging-config: " . $LOGGING_CONFIG . "\n";
-
-if($REMOVE_ORIGINAL) {
-    print $REMOVE_ORIGINAL . "\n";
-}
+print "copy-image-destination: " . $cfg->val( $env, 'copy-image-destination' ) . "\n";
+print "copy-video-destination: " . $cfg->val( $env, 'copy-video-destination' ) . "\n";
+print "logging-config: " . $cfg->val( $env, 'logging-config' ) . "\n";
+print "local-directory: " . $cfg->val( $env, 'local-directory' ) . "\n";
+print "remote-directory: " . $cfg->val( $env, 'remote-directory' ) . "\n";
+print "includes-file: " . $cfg->val( $env, 'includes-file' ) . "\n";
+print "rclone-path: " . $cfg->val( $env, 'rclone-path' ) . "\n";
