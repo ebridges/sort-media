@@ -88,7 +88,15 @@ sub create_date {
     if($dateString) {
 	$LOG->debug("got [$dateString] for [$image].");
 
-	my $t = &Util::parse_date($dateString, @dateformats);
+
+    my $t = undef;
+    if ($dateString =~ m/^[0-9]{10}$/) {
+        $LOG->debug("dateString is a timestamp");
+        $t = &Util::convert_from_epoch($dateString + 0); # force to numeric
+    } else {
+        $LOG->debug("dateString is human readable string");
+	    $t = &Util::parse_date($dateString, @dateformats);
+    }
 
 	if(&Util::is_before_now($t)) {
 	    # i.e.: create date is not in the future

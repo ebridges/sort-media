@@ -3,12 +3,32 @@ package Util;
 use strict;
 use warnings;
 
+use DateTime;
 use DateTime::Format::ISO8601;
 use DateTime::Format::Strptime;
 
 use Log::Log4perl qw(get_logger);
 
 our $LOG = get_logger();
+
+## Difference between Macintosh Epoch time (number of seconds since midnight, January 1, 1904 GMT)
+## and Unix epoch time (seconds since 1/1/1970)
+use constant EPOCH_DIFF => 2082844800;
+
+sub convert_from_epoch {
+    my $epoch = shift;
+    $LOG->debug("converting [$epoch] to DateTime");
+    my $t = DateTime->from_epoch(epoch => $epoch);
+    if (is_before_now($t)) {
+        my $debug_date = join ' ', $t->ymd, $t->hms;
+        $LOG->debug("conversion resulted in date in the future, assume Mac epoch [$debug_date]");
+        $epoch += EPOCH_DIFF;  # assume this is a Mac epoch time, so convert to unix
+        $t = DateTime->from_epoch(epoch => $epoch);
+    }
+    my $debug_date = join ' ', $t->ymd, $t->hms;
+    $LOG->debug("conversion resulted in [$debug_date]");
+    return $t;
+}
 
 sub parse_date {
     my $date = shift;
