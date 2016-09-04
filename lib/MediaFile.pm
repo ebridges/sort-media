@@ -19,7 +19,7 @@ our $LOG = get_logger();
 
 # only support jpeg since they use EXIF data
 ## TODO: support .thm files
-my @valid_extensions = qw(.jpeg .jpg .JPEG .JPG .mp4 .MP4);
+my @valid_extensions = qw(.jpeg .jpg .JPEG .JPG .mp4 .MP4 .avi .AVI);
 my @image_extensions = qw(.jpeg .jpg);
 
 # look for these tags in this order
@@ -36,10 +36,10 @@ my $ISO_8601 = '%Y-%m-%dT%H:%M:%S';
 my @dateformats = (
   '%Y:%m:%d %H:%M:%S',
   '%Y:%m:%d %H:%M:%S%z',
-  '%Y:%m:%d %H:%M%z',
+  '%Y:%m:%d %H:%M%z', 
+  '%a %b %d %H:%M:%S %Y', #  Fri Dec 30 18:29:18 2005
   $ISO_8601
 );
-
 
 sub new {
     my $class = shift;
