@@ -57,7 +57,7 @@ sub validate {
     if(grep {/$suffix/} @valid_extensions) {
 	$self->{srcFilename} = $filename;
 	$self->{srcSuffix} = $suffix;
-	1;
+	return 1;
     }
     undef;
 }
