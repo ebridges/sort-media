@@ -50,6 +50,10 @@ $ ./sbin/sync-photos.pl ebridges
 <dd>Filename extensions of files that should be copied from the remote-directory.</dd>
 <dt>rclone-bath</dt>
 <dd>Path (either relative or absolute> to the `rclone` binary.</dd>
+<dt>remove-remote-files</dt>
+<dd>Remove remote files after successfully processing</dd>
+<dt>purge-local-dir</dt>
+<dd>Clean up local sync dir after running.</dd>
 </dl>
 
 ## Environment

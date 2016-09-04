@@ -27,6 +27,8 @@ my $LOCAL_DIR = $cfg->val( $env, 'local-directory' );
 my $REMOTE_DIR = $cfg->val( $env, 'remote-directory' );
 my $INCLUDES_FILE = $cfg->val( $env, 'includes-file' );
 my $RCLONE_PATH = $cfg->val( $env, 'rclone-path' );
+my $REMOVE_REMOTE_FILES = $cfg->val( $env, 'remove-remote-files' );
+my $PURGE_LOCAL_DIR = $cfg->val( $env, 'purge-local-dir');
 
 Log::Log4perl->init($LOGGING_CONFIG);
 my $LOG = get_logger();
@@ -38,7 +40,7 @@ die "Configuration not found at $CONNECT_CONFIG"
 make_path $LOCAL_DIR
     unless -e $LOCAL_DIR;
 
-my $rclone_sync="$RCLONE_PATH sync '$REMOTE_DIR' '$LOCAL_DIR' --config $CONNECT_CONFIG --include-from '$INCLUDES_FILE' --verbose"; # --dry-run";
+my $rclone_sync="$RCLONE_PATH sync '$REMOTE_DIR' '$LOCAL_DIR' --config $CONNECT_CONFIG --include-from '$INCLUDES_FILE' --verbose";
 
 $LOG->info("Beginning sync from $REMOTE_DIR");
 `$rclone_sync`;
@@ -99,7 +101,12 @@ IMAGE: for(@files) {
 $LOG->info("OK: $COUNT/$TOTAL files sorted");
 $LOG->debug("Files processed:\n" . join("\n", @copied));
 
-my $rclone_rm="$RCLONE_PATH delete '%s:%s' --config $CONNECT_CONFIG --verbose --dry-run";
+my $rclone_rm="$RCLONE_PATH delete '%s:%s' --config $CONNECT_CONFIG --verbose";
+
+if(not $REMOVE_REMOTE_FILES) {
+    $rclone_rm .= " --dry-run"
+}
+
 for (@copied) {
     chomp;
     my $cmd = sprintf $rclone_rm, $REMOTE_DIR, $_;
@@ -109,10 +116,10 @@ for (@copied) {
 	if $?;
 }
 
-my $PURGE = undef;
-$LOG->info("removing local sync directory [$LOCAL_DIR]");
-remove_tree $LOCAL_DIR
-    if $PURGE;
+if ($PURGE_LOCAL_DIR) {
+    $LOG->info("removing local sync directory [$LOCAL_DIR]");
+    remove_tree $LOCAL_DIR;
+}
 
 sub die_usage {
     my $mesg = "Usage: $0 [useraccount]\n";
