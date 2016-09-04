@@ -34,7 +34,6 @@ $ ./sbin/sync-photos.pl ebridges
 * Managed in file `etc/config.ini`
 
 * Configuration Parameters
-* 
 <dl>
 <dt>logging-config</dt>
 <dd>Location of log4perl configuration file.</dd>
@@ -67,7 +66,7 @@ $ ./sbin/sync-photos.pl ebridges
 <dt>PATH</dt>
 <dd>Appends the bin folder to the executable path.</dd>
 <dt>IMGSORTER_ENV</dt>
-<dd>Specifies the section of the config to pull from -- either `DEVELOPMENT` or `PRODUCTION`</dd>
+<dd>Specifies the section of the config to pull from -- either `DEVELOPMENT` (default if absent) or `PRODUCTION`</dd>
 </dl>
 
 ## To Do
