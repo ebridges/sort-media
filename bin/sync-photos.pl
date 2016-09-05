@@ -101,7 +101,7 @@ IMAGE: for(@files) {
 $LOG->info("OK: $COUNT/$TOTAL files sorted");
 $LOG->debug("Files processed:\n" . join("\n", @copied));
 
-my $rclone_rm="$RCLONE_PATH delete '%s:%s' --config $CONNECT_CONFIG --verbose";
+my $rclone_rm="$RCLONE_PATH delete '%s/%s' --config $CONNECT_CONFIG --verbose";
 
 if(not $REMOVE_REMOTE_FILES) {
     $rclone_rm .= " --dry-run"
