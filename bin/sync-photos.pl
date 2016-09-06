@@ -23,7 +23,7 @@ my $cfg = Config::IniFiles->new( -file => $ini );
 my $COPY_IMAGE_DESTINATION = $cfg->val( $env, 'copy-image-destination' );
 my $COPY_VIDEO_DESTINATION = $cfg->val( $env, 'copy-video-destination' );
 my $LOGGING_CONFIG = $cfg->val( $env, 'logging-config' );
-my $LOCAL_DIR = $cfg->val( $env, 'local-directory' );
+my $LOCAL_DIR = $cfg->val( $env, 'local-directory' ) . '-' . $account;
 my $REMOTE_DIR = $cfg->val( $env, 'remote-directory' );
 my $INCLUDES_FILE = $cfg->val( $env, 'includes-file' );
 my $RCLONE_PATH = $cfg->val( $env, 'rclone-path' );
