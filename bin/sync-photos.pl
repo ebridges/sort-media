@@ -91,7 +91,7 @@ IMAGE: for(@files) {
     $LOG->logdie("dest image already exists! ($dest_image) from ($image)")
         unless not -e $dest_image;
 
-    $LOG->debug("copying [$image] to [$dest_image]");
+    $LOG->info("copying [$image] to [$dest_image]");
     my $successful = $mediaFile->copy_to_dest($dest_image);
 
     if($successful) {
@@ -118,7 +118,7 @@ sub delete_local_file {
     my $file = $local_dir . '/' . $local_file;
     $LOG->info("deleting local copy [$file]");
     unlink $file
-        or $LOG->logdie("unable to delete file [$file]: [$!]");
+        or $LOG->logdie("unable to delete local file [$file]: [$!]");
 }
 
 sub delete_remote_file {
@@ -127,7 +127,7 @@ sub delete_remote_file {
     my $cmd = sprintf $rclone_rm, $remote_dir, $remote_file;
     $LOG->info("deleting remote copy [$REMOTE_DIR/$_].");
     `$cmd`;
-    $LOG->logdie("Error when deleting [$REMOTE_DIR/$_] from remote: $?")
+    $LOG->logdie("unable to delete remote file [$REMOTE_DIR/$_]: $?")
         if $?;
 }
 
