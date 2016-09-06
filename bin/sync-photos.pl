@@ -55,7 +55,6 @@ $LOG->info("Completed sync from $REMOTE_DIR");
 
 my @files = &list_files($LOCAL_DIR);
 my $TOTAL = scalar @files;
-my @copied;
 my $COUNT = 0;
 
 $LOG->info("beginning processing of $TOTAL files.");
@@ -103,7 +102,6 @@ IMAGE: for(@files) {
         next IMAGE;
     }
 }
-
 
 if ($PURGE_LOCAL_DIR) {
     $LOG->info("removing local sync directory [$LOCAL_DIR]");
