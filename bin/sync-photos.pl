@@ -41,6 +41,11 @@ make_path $LOCAL_DIR
     unless -e $LOCAL_DIR;
 
 my $rclone_sync="$RCLONE_PATH sync '$REMOTE_DIR' '$LOCAL_DIR' --config $CONNECT_CONFIG --include-from '$INCLUDES_FILE' --verbose";
+my $rclone_rm="$RCLONE_PATH delete '%s/%s' --config $CONNECT_CONFIG --verbose";
+
+if(not $REMOVE_REMOTE_FILES) {
+    $rclone_rm .= " --dry-run"
+}
 
 $LOG->info("Beginning sync from $REMOTE_DIR");
 `$rclone_sync`;
@@ -87,38 +92,43 @@ IMAGE: for(@files) {
         unless not -e $dest_image;
 
     $LOG->debug("copying [$image] to [$dest_image]");
-    
     my $successful = $mediaFile->copy_to_dest($dest_image);
+
     if($successful) {
         $COUNT++;
-        push @copied, $image;
+        delete_local_file($LOCAL_DIR, $image);
+        delete_remote_file($REMOTE_DIR, $image);
     } else {
         $LOG->error("unable to copy [$image] to [$dest_image]: $!");
         next IMAGE;
     }
 }
 
-$LOG->info("OK: $COUNT/$TOTAL files sorted");
-$LOG->debug("Files processed:\n" . join("\n", @copied));
-
-my $rclone_rm="$RCLONE_PATH delete '%s/%s' --config $CONNECT_CONFIG --verbose";
-
-if(not $REMOVE_REMOTE_FILES) {
-    $rclone_rm .= " --dry-run"
-}
-
-for (@copied) {
-    chomp;
-    my $cmd = sprintf $rclone_rm, $REMOTE_DIR, $_;
-    $LOG->info("deleting [$REMOTE_DIR/$_] from remote.");
-    `$cmd`;
-    $LOG->logdie("Error when deleting [$REMOTE_DIR/$_] from remote: $?")
-        if $?;
-}
 
 if ($PURGE_LOCAL_DIR) {
     $LOG->info("removing local sync directory [$LOCAL_DIR]");
     remove_tree $LOCAL_DIR;
+}
+
+$LOG->info("OK: $COUNT/$TOTAL files sorted");
+
+sub delete_local_file {
+    my $local_dir = shift;
+    my $local_file = shift;
+    my $file = $local_dir . '/' . $local_file;
+    $LOG->info("deleting local copy [$file]");
+    unlink $file
+        or $LOG->logdie("unable to delete file [$file]: [$!]");
+}
+
+sub delete_remote_file {
+    my $remote_dir = shift;
+    my $remote_file = shift;
+    my $cmd = sprintf $rclone_rm, $remote_dir, $remote_file;
+    $LOG->info("deleting remote copy [$REMOTE_DIR/$_].");
+    `$cmd`;
+    $LOG->logdie("Error when deleting [$REMOTE_DIR/$_] from remote: $?")
+        if $?;
 }
 
 sub die_usage {
