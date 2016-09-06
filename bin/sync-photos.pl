@@ -94,9 +94,9 @@ IMAGE: for(@files) {
     my $successful = $mediaFile->copy_to_dest($dest_image);
 
     if($successful) {
-        $COUNT++;
         delete_local_file($LOCAL_DIR, $image);
         delete_remote_file($REMOTE_DIR, $image);
+        $COUNT++;
     } else {
         $LOG->error("unable to copy [$image] to [$dest_image]: $!");
         next IMAGE;
