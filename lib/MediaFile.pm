@@ -44,7 +44,7 @@ my @dateformats = (
 sub new {
     my $class = shift;
     my $self = {
-	srcPath => shift,
+        srcPath => shift,
     };
     $self->{hasAdjustment} = undef;
     bless $self, $class;
@@ -55,9 +55,9 @@ sub validate {
     my $self = shift;
     my ($filename, $directories, $suffix) = fileparse($self->{srcPath}, qr/\.[^.]*/);
     if(grep {/$suffix/} @valid_extensions) {
-	$self->{srcFilename} = $filename;
-	$self->{srcSuffix} = $suffix;
-	return 1;
+        $self->{srcFilename} = $filename;
+        $self->{srcSuffix} = $suffix;
+        return 1;
     }
     undef;
 }
@@ -67,7 +67,7 @@ sub is_image {
     my ($filename, $directories, $suffix) = fileparse($self->{srcPath}, qr/\.[^.]*/);
     $suffix = lc($suffix);
     if(grep {/$suffix/} @image_extensions) {
-	return 1;
+        return 1;
     }
     undef;
 }
@@ -81,33 +81,31 @@ sub create_date {
     my $dateString = &MediaManager::resolve_tags($image, @created_tags);
 
     if($LOG->is_trace()) {
-	MediaManager::dump_tags_trace($image);
+        MediaManager::dump_tags_trace($image);
     }
 
     $self->{createDate} = undef;
     if($dateString) {
-	$LOG->debug("got [$dateString] for [$image].");
+        $LOG->debug("got createDate [$dateString] for [$image].");
 
+        my $t = undef;
+        if ($dateString =~ m/^[0-9]{10}$/) {
+            $LOG->debug("dateString is a timestamp");
+            $t = &Util::convert_from_epoch($dateString + 0); # force to numeric
+        } else {
+            $t = &Util::parse_date($dateString, @dateformats);
+        }
 
-    my $t = undef;
-    if ($dateString =~ m/^[0-9]{10}$/) {
-        $LOG->debug("dateString is a timestamp");
-        $t = &Util::convert_from_epoch($dateString + 0); # force to numeric
+        if(&Util::is_before_now($t)) {
+            # i.e.: create date is not in the future
+            $self->{createDate} = $t;
+        } else {
+            # create date is in the future and needs adjustment
+            $LOG->logdie("Got a createDate in future, assume camera had wrong date.");
+    #        $self->{createDate} = $self->adjust_date($t);
+        }
     } else {
-        $LOG->debug("dateString is human readable string");
-	    $t = &Util::parse_date($dateString, @dateformats);
-    }
-
-	if(&Util::is_before_now($t)) {
-	    # i.e.: create date is not in the future
-	    $self->{createDate} = $t;
-	} else {
-	    # create date is in the future and needs adjustment
-	    $LOG->logdie("Got a createDate in future, assume camera had wrong date.");
-#	    $self->{createDate} = $self->adjust_date($t);
-	}
-    } else {
-	$LOG->debug("No createDate found in image [$image].");
+        $LOG->debug("No createDate found in image [$image].");
     }
     return $self->{createDate};
 }
@@ -135,28 +133,28 @@ sub copy_to_dest {
     my $status = undef;
     
     if($dest ne $self->{destPath}) {
-	$LOG->logdie("invalid state exception: dest_image [$dest] does not match destPath [$self->{destPath}]");
+        $LOG->logdie("invalid state exception: dest_image [$dest] does not match destPath [$self->{destPath}]");
     }
 
     $status = copy $self->{srcPath}, $dest;
 
     if($status) {
-	$LOG->debug("successfully copied to $dest");
+        $LOG->debug("successfully copied to $dest");
     } else {
-	return $status;
+        return $status;
     }
 
     if($self->{hasAdjustment}) {
-	$LOG->debug("image requires adjustment, updating create date tags for photo [$dest] to be [$self->{correctedDate}]");
-	$status =  &MediaManager::update_tags(
-	    $self->{destPath},
-	    $self->{correctedDate},
-	    @created_tags
-	    );
+        $LOG->debug("image requires adjustment, updating create date tags for photo [$dest] to be [$self->{correctedDate}]");
+        $status =  &MediaManager::update_tags(
+            $self->{destPath},
+            $self->{correctedDate},
+            @created_tags
+        );
 
-	if(not $status) {
-	    return $status;
-	}
+        if(not $status) {
+            return $status;
+        }
     }
 
     return $status;
@@ -177,10 +175,10 @@ sub format_dest_filepath {
     my $destdir = $docroot . '/' . $date;
 
     if(not -e $destdir) {
-	my $successful = mkpath $destdir;
-	if(not $successful) {
-	    $LOG->logdie("unable to create dest dir ($destdir): $!\n"); 
-	}
+        my $successful = mkpath $destdir;
+        if(not $successful) {
+            $LOG->logdie("unable to create dest dir ($destdir): $!\n");
+        }
     }
 
     $self->{destPath} = &make_filepath($destdir, $created, 1, $suffix);
@@ -207,12 +205,12 @@ sub make_filepath {
 
     # cap recursion at 100 increments
     while($serial < 100 && -e $name) {
-	$LOG->debug("recursing on [$name] since it exists.");
-	$name = &make_filepath($destdir, $created, ++$serial, $suffix); 
+        $LOG->debug("recursing on [$name] since it exists.");
+        $name = &make_filepath($destdir, $created, ++$serial, $suffix);
     }
 
     if($serial == 100) {
-	$LOG->logdie("too many duplicate image filenames, unable to create new filename for [$name].");
+        $LOG->logdie("too many duplicate image filenames, unable to create new filename for [$name].");
     }
 
     return $name;
