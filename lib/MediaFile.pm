@@ -17,10 +17,8 @@ use constant CURRENT_DATE => '2012-09-04T23:20:00';
 
 our $LOG = get_logger();
 
-# only support jpeg since they use EXIF data
-## TODO: support .thm files
-my @valid_extensions = qw(.jpeg .jpg .JPEG .JPG .mp4 .MP4 .avi .AVI);
-my @image_extensions = qw(.jpeg .jpg);
+my @valid_extensions = qw(.jpeg .jpg .JPEG .JPG .mp4 .MP4 .avi .AVI .mov .MOV .png .PNG .3gp .3GP);
+my @image_extensions = qw(.jpeg .jpg .png);
 
 # look for these tags in this order
 my @created_tags = (

@@ -2,3 +2,6 @@
 *.mp4
 *.jpeg
 *.avi
+*.mov
+*.png
+*.3gp
