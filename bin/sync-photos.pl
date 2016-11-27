@@ -10,8 +10,15 @@ use MediaFile;
 use Config::IniFiles;
 
 my $account=shift;
+my $config=shift;
 die_usage()
     unless $account;
+die_usage()
+    unless $config;
+
+die "Configuration not found at [$config]"
+    unless -e $config;
+ and -e $config
 
 my $env = 'DEVELOPMENT';
 if (defined $ENV{IMGSORTER_ENV}) {
@@ -33,15 +40,11 @@ my $PURGE_LOCAL_DIR = $cfg->val( $env, 'purge-local-dir');
 Log::Log4perl->init($LOGGING_CONFIG);
 my $LOG = get_logger();
 
-my $CONNECT_CONFIG="./$account-rclone.conf";
-die "Configuration not found at $CONNECT_CONFIG"
-    unless -e $CONNECT_CONFIG;
-
 make_path $LOCAL_DIR
     unless -e $LOCAL_DIR;
 
-my $rclone_sync="$RCLONE_PATH sync '$REMOTE_DIR' '$LOCAL_DIR' --config $CONNECT_CONFIG --include-from '$INCLUDES_FILE' --verbose";
-my $rclone_rm="$RCLONE_PATH delete '%s/%s' --config $CONNECT_CONFIG --verbose";
+my $rclone_sync="$RCLONE_PATH sync '$REMOTE_DIR' '$LOCAL_DIR' --config $config --include-from '$INCLUDES_FILE' --verbose";
+my $rclone_rm="$RCLONE_PATH delete '%s/%s' --config $config --verbose";
 
 if(not $REMOVE_REMOTE_FILES) {
     $rclone_rm .= " --dry-run"
