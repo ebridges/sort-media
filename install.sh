@@ -7,7 +7,7 @@ then
 fi
 
 REPO='sort-media'
-FILE="sort-media-v${VERSION}.tar.gz"
+FILE="v${VERSION}.tar.gz"
 DIST_DIR='./dist'
 CURRENT_LINK='current'
 
