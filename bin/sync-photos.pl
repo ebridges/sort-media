@@ -27,7 +27,7 @@ my $cfg = Config::IniFiles->new( -file => $ini );
 my $COPY_IMAGE_DESTINATION = $cfg->val( $env, 'copy-image-destination' );
 my $COPY_VIDEO_DESTINATION = $cfg->val( $env, 'copy-video-destination' );
 my $LOGGING_CONFIG = $cfg->val( $env, 'logging-config' );
-my $today = strftime('%Y-%m-%dT%H%M%S',localtime);
+my $today = strftime('%Y-%m-%d',localtime);
 my $LOCAL_DIR = $cfg->val( $env, 'local-directory' ) . '-' . $today;
 my $REMOTE_DIR = $cfg->val( $env, 'remote-directory' );
 my $INCLUDES_FILE = $cfg->val( $env, 'includes-file' );
