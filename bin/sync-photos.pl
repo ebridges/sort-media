@@ -16,7 +16,6 @@ die_usage()
 
 die "Configuration not found at [$config]"
     unless -e $config;
- and -e $config
 
 my $env = 'DEVELOPMENT';
 if (defined $ENV{IMGSORTER_ENV}) {
