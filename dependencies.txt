@@ -1,4 +1,6 @@
 DateTime
+DateTime::Format::ISO8601
+DateTime::Format::Strptime
 Config::IniFiles
 Image::ExifTool
 Log::Log4perl
