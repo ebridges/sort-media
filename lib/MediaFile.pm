@@ -169,8 +169,9 @@ sub format_dest_filepath {
     my $created = $self->{createDate};
     my $suffix  = lc $self->{srcSuffix};
     my $date = $created->ymd();
+    my $year = $created->year();
 
-    my $destdir = $docroot . '/' . $date;
+    my $destdir = $docroot . '/' . $year . '/' . $date;
 
     if(not -e $destdir) {
         my $successful = mkpath $destdir;
