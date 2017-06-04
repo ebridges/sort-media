@@ -7,6 +7,7 @@ use Log::Log4perl qw(get_logger);
 use File::Basename;
 use File::Copy;
 use File::Path;
+use Image::ExifTool qw(:Public);
 
 use MediaManager;
 use Util;
@@ -110,6 +111,7 @@ sub create_date {
 sub copy_to_dest {
     my $self = shift;
     my $dest = shift;
+    my %tags = %{ shift() };
 
     my $status = undef;
     
@@ -117,13 +119,29 @@ sub copy_to_dest {
         $LOG->logdie("invalid state exception: dest_image [$dest] does not match destPath [$self->{destPath}]");
     }
 
-    $status = copy $self->{srcPath}, $dest;
+    my $exifTool = new Image::ExifTool;
+    $exifTool->ExtractInfo($self->{srcPath});
 
-    if($status) {
-        $LOG->debug("successfully copied to $dest");
-    } else {
-        return $status;
+    foreach my $key (keys(%tags) {
+        ($success, $errmsg) = $exifTool->SetNewValue("$key" => $tags{$key});
+        warn("unable to update tag [$key] on image [" . $self->{srcPath} . "] because [$errmsg]")
+            unless $success;
     }
+
+    $status = $exifTool->WriteInfo($srcfile, $dstfile);
+
+    my $errorMessage = $exifTool->GetValue('Error');
+    my $warningMessage = $exifTool->GetValue('Warning');
+    if ($status > 0) {
+        $LOG->debug("successfully copied to $dest");
+        if($warningMessage) {
+            $LOG->info("copy to $dest succeeded with warning: ".$warningMessage);
+        }
+    } else {
+        $LOG->info("error occurred when writing $dest: ".$errorMessage)
+    }
+
+    return $status;
 }
 
 ## format filepath as $destdir/yyyy-mm-dd/yyyymmdd_hhmmss_nn.typ
