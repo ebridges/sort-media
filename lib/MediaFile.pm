@@ -122,13 +122,13 @@ sub copy_to_dest {
     my $exifTool = new Image::ExifTool;
     $exifTool->ExtractInfo($self->{srcPath});
 
-    foreach my $key (keys(%tags) {
-        ($success, $errmsg) = $exifTool->SetNewValue("$key" => $tags{$key});
+    for my $key (keys(%tags)) {
+        my ($success, $errmsg) = $exifTool->SetNewValue("$key" => $tags{$key});
         warn("unable to update tag [$key] on image [" . $self->{srcPath} . "] because [$errmsg]")
             unless $success;
     }
 
-    $status = $exifTool->WriteInfo($srcfile, $dstfile);
+    $status = $exifTool->WriteInfo($self->{srcPath}, $dest);
 
     my $errorMessage = $exifTool->GetValue('Error');
     my $warningMessage = $exifTool->GetValue('Warning');
