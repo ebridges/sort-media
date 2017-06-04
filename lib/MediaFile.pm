@@ -100,28 +100,11 @@ sub create_date {
         } else {
             # create date is in the future and needs adjustment
             $LOG->logdie("Got a createDate in future, assume camera had wrong date.");
-    #        $self->{createDate} = $self->adjust_date($t);
         }
     } else {
         $LOG->debug("No createDate found in image [$image].");
     }
     return $self->{createDate};
-}
-
-sub adjust_date {
-    my $self = shift;
-    my $wrong_date = shift;
-
-    my $image = $self->{srcPath};
-
-    my $diff = &Util::date_diff( CURRENT_DATE, CAMERA_DATE );
-
-    my $corrected_date = &Util::adjust_date($wrong_date, $diff);
-
-    $self->{correctedDate} = $corrected_date;
-    $self->{hasAdjustment} = 1;
-
-    return $self->{correctedDate};
 }
 
 sub copy_to_dest {
@@ -141,21 +124,6 @@ sub copy_to_dest {
     } else {
         return $status;
     }
-
-    if($self->{hasAdjustment}) {
-        $LOG->debug("image requires adjustment, updating create date tags for photo [$dest] to be [$self->{correctedDate}]");
-        $status =  &MediaManager::update_tags(
-            $self->{destPath},
-            $self->{correctedDate},
-            @created_tags
-        );
-
-        if(not $status) {
-            return $status;
-        }
-    }
-
-    return $status;
 }
 
 ## format filepath as $destdir/yyyy-mm-dd/yyyymmdd_hhmmss_nn.typ
