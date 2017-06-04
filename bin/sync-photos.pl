@@ -11,6 +11,7 @@ use Config::IniFiles;
 use POSIX qw/strftime/;
 
 my $config=shift;
+my $author=shift;
 die_usage()
     unless $config;
 
@@ -34,6 +35,12 @@ my $INCLUDES_FILE = $cfg->val( $env, 'includes-file' );
 my $RCLONE_PATH = $cfg->val( $env, 'rclone-path' );
 my $REMOVE_REMOTE_FILES = $cfg->val( $env, 'remove-remote-files' );
 my $PURGE_LOCAL_DIR = $cfg->val( $env, 'purge-local-dir');
+
+my %tags = ();
+
+if($author) {
+    %tags = ('XMP:Creator' => $author);
+}
 
 Log::Log4perl->init($LOGGING_CONFIG);
 my $LOG = get_logger();
@@ -92,7 +99,7 @@ IMAGE: for(@files) {
         unless not -e $dest_image;
 
     $LOG->info("copying [$image] to [$dest_image]");
-    my $successful = $mediaFile->copy_to_dest($dest_image);
+    my $successful = $mediaFile->copy_to_dest($dest_image, \%tags);
 
     if($successful) {
         delete_local_file($LOCAL_DIR, $image);
@@ -131,7 +138,7 @@ sub delete_remote_file {
 }
 
 sub die_usage {
-    my $mesg = "Usage: $0 [rclone-config]\n";
+    my $mesg = "Usage: $0 [rclone-config] (author)\n";
     die $mesg; 
 }
 
