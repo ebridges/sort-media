@@ -39,7 +39,10 @@ my $PURGE_LOCAL_DIR = $cfg->val( $env, 'purge-local-dir');
 my %tags = ();
 
 if($author) {
-    %tags = ('XMP:Creator' => $author);
+    %tags = (
+        'XMP:Creator' => $author,
+        'exif:Artist' => $author
+    );
 }
 
 Log::Log4perl->init($LOGGING_CONFIG);
