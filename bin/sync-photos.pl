@@ -90,6 +90,11 @@ IMAGE: for(@files) {
         next IMAGE;
     }
 
+    ## if this was taken on instagram, set GPS Timestamp properly
+    if ($mediaFile->is_instagram()) {
+        $mediaFile->set_gps_time();
+    }
+
     my $destination_dir = undef;
     if($mediaFile->is_image()) {
         $destination_dir = $COPY_IMAGE_DESTINATION;

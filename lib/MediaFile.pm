@@ -71,6 +71,15 @@ sub is_image {
     undef;
 }
 
+sub is_instagram {
+    my $self = shift;
+    my $image = $self->{srcPath};
+
+    my $software = &MediaManager::resolve_tags($image, 'Software');
+
+    return lc($software) eq 'instagram';
+}
+
 # Returns a DateTime object representing the creation date of the image.
 sub create_date {
     $LOG->trace('create_date() called.');
