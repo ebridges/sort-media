@@ -6,5 +6,5 @@ then
     exit 1
 fi
 
-git tag v${VERSION} --message="Release v${VERSION}"
+git tag --sign v${VERSION} --message="Release v${VERSION}"
 git push origin --tags
