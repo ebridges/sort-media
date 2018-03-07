@@ -7,6 +7,8 @@ use DateTime;
 use DateTime::Format::ISO8601;
 use DateTime::Format::Strptime;
 
+use Digest::SHA;
+
 use Log::Log4perl qw(get_logger);
 
 our $LOG = get_logger();
@@ -14,6 +16,20 @@ our $LOG = get_logger();
 ## Difference between Macintosh Epoch time (number of seconds since midnight, January 1, 1904 GMT)
 ## and Unix epoch time (seconds since 1/1/1970)
 use constant EPOCH_DIFF => 2082844800;
+
+sub calc_checksum {
+    my $filename = shift;
+
+    $LOG->debug("checksum($filename)");
+
+    open my $fh, '<:raw', $filename
+        or die "cannnot open $filename";
+
+    $sha = Digest::SHA->new(512);
+    $sha->addfile($fh);
+
+    return $sha->hexdigest;
+}
 
 sub convert_from_epoch {
     my $epoch = shift;
