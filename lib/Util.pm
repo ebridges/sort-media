@@ -25,9 +25,8 @@ sub calc_checksum {
     open my $fh, '<:raw', $filename
         or die "cannnot open $filename";
 
-    $sha = Digest::SHA->new(512);
+    my $sha = Digest::SHA->new(512);
     $sha->addfile($fh);
-
     return $sha->hexdigest;
 }
 
