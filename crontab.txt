@@ -1,3 +1,4 @@
-# run fifteen minutes after midnight, every day
-15 0 * * * . $HOME/.profile_cron ; $HOME/bin/sync-photos.pl ebridges etc/ebridges-rclone.conf > $HOME/log/crontab-ebridges.out 2>&1
-15 1 * * * . $HOME/.profile_cron ; $HOME/bin/sync-photos.pl ewa etc/ewa-rclone.conf > $HOME/log/crontab-ewa.out 2>&1
+#Ansible: backup ebridges
+15 0 * * * . $HOME/.profile_cron ; $HOME/bin/sync-photos.pl etc/ebridges-rclone.conf 'Edward Bridges'> $HOME/log/crontab-ebridges.out 2>&1
+#Ansible: backup ewa
+15 1 * * * . $HOME/.profile_cron ; $HOME/bin/sync-photos.pl etc/ewa-rclone.conf 'Ewa Bridges' > $HOME/log/crontab-ewa.out 2>&1
