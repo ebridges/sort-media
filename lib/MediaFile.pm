@@ -129,9 +129,7 @@ sub copy_to_dest {
     }
 
     # add a UUID based on filename as ImageUniqueID
-    my $filename = basename($dest);
-    my $uuid = `/usr/bin/uuid -v5 ns:URL $filename`;
-    $LOG->debug("$dest [$uuid] based on filename.");
+    my $uuid = Util.calc_uuid($dest)
     $exifTool->SetNewValue("imageuniqueid", $uuid);
 
     $status = $exifTool->WriteInfo($self->{srcPath}, $dest);
