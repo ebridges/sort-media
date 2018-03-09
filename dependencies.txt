@@ -5,3 +5,4 @@ Config::IniFiles
 Image::ExifTool
 Log::Log4perl
 UUID::Tiny
+DBD::CSV
