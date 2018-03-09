@@ -35,6 +35,7 @@ my $INCLUDES_FILE = $cfg->val( $env, 'includes-file' );
 my $RCLONE_PATH = $cfg->val( $env, 'rclone-path' );
 my $REMOVE_REMOTE_FILES = $cfg->val( $env, 'remove-remote-files' );
 my $PURGE_LOCAL_DIR = $cfg->val( $env, 'purge-local-dir');
+my $IMAGE_DATABASE = $cfg->val( $env, 'image-database');
 
 my %tags = ();
 
