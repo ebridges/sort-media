@@ -22,6 +22,7 @@ sub calc_uuid {
     my $filepath = shift;
     my $filename = &basename($filepath);
     my $uuid = &create_uuid_as_string(UUID_V5, UUID_NS_URL, $filename);
+    $LOG->debug("calc_uuid($filename): [$uuid]");
     return $uuid;
 }
 
