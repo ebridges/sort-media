@@ -9,6 +9,7 @@ use Log::Log4perl qw(get_logger);
 use MediaFile;
 use Config::IniFiles;
 use POSIX qw/strftime/;
+use ImageMetaInfoDB;
 
 my $config=shift;
 my $author=shift;
@@ -48,6 +49,8 @@ if($author) {
 
 Log::Log4perl->init($LOGGING_CONFIG);
 my $LOG = get_logger();
+
+my $DB = new ImageMetaInfoDB($IMAGE_DATABASE);
 
 make_path $LOCAL_DIR
     unless -e $LOCAL_DIR;
@@ -106,6 +109,7 @@ IMAGE: for(@files) {
     my $successful = $mediaFile->copy_to_dest($dest_image, \%tags);
 
     if($successful) {
+        $DB->save_image_info($mediaFile);
         delete_local_file($LOCAL_DIR, $image);
         delete_remote_file($REMOTE_DIR, $image);
         $COUNT++;
