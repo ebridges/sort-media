@@ -130,6 +130,7 @@ sub copy_to_dest {
 
     # add a UUID based on filename as ImageUniqueID
     my $uuid = &Util::calc_uuid($dest);
+    $self->{uuid} = $uuid;
     $exifTool->SetNewValue("imageuniqueid", $uuid);
 
     $status = $exifTool->WriteInfo($self->{srcPath}, $dest);
@@ -144,6 +145,8 @@ sub copy_to_dest {
     } else {
         $LOG->info("error occurred when writing $dest: ".$errorMessage)
     }
+
+    $self->{checkSum} = &Util::calc_checksum($dest);
 
     return $status;
 }
@@ -171,6 +174,8 @@ sub format_dest_filepath {
     }
 
     $self->{destPath} = &make_filepath($destdir, $created, 1, $suffix);
+    $self->{imageUri} = $year . '/' . $date . '/' . &basename($self->{destPath});
+
     $LOG->debug("formatted new filepath as [$self->{destPath}]");
 
     return $self->{destPath};
