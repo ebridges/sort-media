@@ -12,8 +12,8 @@ my $candidate_file = $0;
 my $expected_uuid = &candidate_uuid($candidate_file);
 my $actual_uuid = Util::calc_uuid($candidate_file);
 
-# print "$expected_uuid\n";
-# print "$actual_uuid\n";
+# print "expected: $expected_uuid\n";
+# print "actual:   $actual_uuid\n";
 &assert($expected_uuid eq $actual_uuid, "expected[$expected_uuid]\nactual  [$actual_uuid]");
 
 sub candidate_uuid {
@@ -27,5 +27,5 @@ sub assert {
     my $bool = shift;
     my $mesg = shift;
     warn $mesg . "\n"
-	unless $bool;
+	    unless $bool;
 }

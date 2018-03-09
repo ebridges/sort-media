@@ -8,6 +8,7 @@ use DateTime::Format::ISO8601;
 use DateTime::Format::Strptime;
 use File::Basename;
 use Digest::SHA;
+use UUID::Tiny ':std';
 
 use Log::Log4perl qw(get_logger);
 
@@ -20,8 +21,7 @@ use constant EPOCH_DIFF => 2082844800;
 sub calc_uuid {
     my $filepath = shift;
     my $filename = &basename($filepath);
-    my $uuid = `uuid -v5 ns:URL $filename`;
-    chomp $uuid;
+    my $uuid = &create_uuid_as_string(UUID_V5, UUID_NS_URL, $filename);
     return $uuid;
 }
 
