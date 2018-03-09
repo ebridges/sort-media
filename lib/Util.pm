@@ -6,6 +6,9 @@ use warnings;
 use DateTime;
 use DateTime::Format::ISO8601;
 use DateTime::Format::Strptime;
+use File::Basename;
+use Digest::SHA;
+use UUID::Tiny ':std';
 
 use Log::Log4perl qw(get_logger);
 
@@ -14,6 +17,27 @@ our $LOG = get_logger();
 ## Difference between Macintosh Epoch time (number of seconds since midnight, January 1, 1904 GMT)
 ## and Unix epoch time (seconds since 1/1/1970)
 use constant EPOCH_DIFF => 2082844800;
+
+sub calc_uuid {
+    my $filepath = shift;
+    my $filename = &basename($filepath);
+    my $uuid = &create_uuid_as_string(UUID_V5, UUID_NS_URL, $filename);
+    $LOG->debug("calc_uuid($filename): [$uuid]");
+    return $uuid;
+}
+
+sub calc_checksum {
+    my $filename = shift;
+
+    $LOG->debug("checksum($filename)");
+
+    open my $fh, '<:raw', $filename
+        or die "cannnot open $filename";
+
+    my $sha = Digest::SHA->new(512);
+    $sha->addfile($fh);
+    return $sha->hexdigest;
+}
 
 sub convert_from_epoch {
     my $epoch = shift;

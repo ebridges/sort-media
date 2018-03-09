@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/bin/env perl -w
 
 use strict;
 use warnings;
@@ -9,6 +9,7 @@ use Log::Log4perl qw(get_logger);
 use MediaFile;
 use Config::IniFiles;
 use POSIX qw/strftime/;
+use ImageMetaInfoDB;
 
 my $config=shift;
 my $author=shift;
@@ -35,6 +36,7 @@ my $INCLUDES_FILE = $cfg->val( $env, 'includes-file' );
 my $RCLONE_PATH = $cfg->val( $env, 'rclone-path' );
 my $REMOVE_REMOTE_FILES = $cfg->val( $env, 'remove-remote-files' );
 my $PURGE_LOCAL_DIR = $cfg->val( $env, 'purge-local-dir');
+my $IMAGE_DATABASE = $cfg->val( $env, 'image-database');
 
 my %tags = ();
 
@@ -47,6 +49,8 @@ if($author) {
 
 Log::Log4perl->init($LOGGING_CONFIG);
 my $LOG = get_logger();
+
+my $DB = new ImageMetaInfoDB($IMAGE_DATABASE);
 
 make_path $LOCAL_DIR
     unless -e $LOCAL_DIR;
@@ -105,6 +109,7 @@ IMAGE: for(@files) {
     my $successful = $mediaFile->copy_to_dest($dest_image, \%tags);
 
     if($successful) {
+        $DB->save_image_info($mediaFile);
         delete_local_file($LOCAL_DIR, $image);
         delete_remote_file($REMOTE_DIR, $image);
         $COUNT++;
