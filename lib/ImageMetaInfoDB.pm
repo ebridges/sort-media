@@ -7,7 +7,7 @@ use Log::Log4perl qw(get_logger);
 use DBI;
 use DBD::CSV;
 
-use constant IMAGE_INFO_TABLE => 'image_info';
+use constant IMAGE_INFO_TABLE => 'media_info';
 use constant IMAGE_INFO_DB_EXT => '.csv';
 
 our $LOG = get_logger();
