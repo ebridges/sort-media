@@ -13,8 +13,8 @@ use MediaManager;
 use Util;
 
 ## dates to use in correcting for bad camera date
-use constant CAMERA_DATE => '2034-04-30T16:14:00';
-use constant CURRENT_DATE => '2012-09-04T23:20:00';
+use constant CAMERA_DATE => '2034-04-30T16:14:00'; # 2030040840
+use constant CURRENT_DATE => '2012-09-04T23:20:00'; # 1346815200
 
 our $LOG = get_logger();
 
