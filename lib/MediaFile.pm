@@ -73,9 +73,9 @@ sub is_image {
 
 # Returns a DateTime object representing the creation date of the image.
 sub create_date {
-    $LOG->trace('create_date() called.');
-    # extract created date from EXIF data of image and format as ISO-8601 format
     my $self = shift;
+    $LOG->trace('create_date() called for: ' . $self->{srcPath});
+    # extract created date from EXIF data of image and format as ISO-8601 format
     my $image = $self->{srcPath};
     my $dateString = &MediaManager::resolve_tags($image, @created_tags);
 
