@@ -151,11 +151,11 @@ sub copy_to_dest {
     return $status;
 }
 
-## format filepath as $destdir/yyyy-mm-dd/yyyymmdd_hhmmss_nn.typ
+## format filepath as $destdir/yyyy-mm-dd/yyyymmdd_hhmmss_nnn.typ
 sub format_dest_filepath {
     $LOG->trace('format_dest_filepath() called.');
-    # format the filename for the new image as yyyymmdd_hhmmss_nn.typ where
-    # 'nn' is a serial number incremented if the image exists already, or just '01'
+    # format the filename for the new image as yyyymmdd_hhmmss_nnn.typ where
+    # 'nnn' is a serial number incremented if the image exists already, or just '001'
     my $self = shift;
     my $docroot = shift;
 
@@ -195,7 +195,7 @@ sub make_filepath {
     my $time = $created->hms('');
     my $datetime = $date . 'T' . $time;
 
-    my $name = $destdir . '/' . $datetime . '_' . sprintf('%02d', $serial) . $suffix;
+    my $name = $destdir . '/' . $datetime . '_' . sprintf('%03d', $serial) . $suffix;
 
     # cap recursion at 100 increments
     while($serial < 100 && -e $name) {
