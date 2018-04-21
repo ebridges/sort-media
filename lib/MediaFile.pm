@@ -47,7 +47,7 @@ sub new {
     $self->{srcFilename} = $filename;
     $self->{srcSuffix} = $suffix;
     $self->{hasAdjustment} = undef;
-    $self->{mediaType} = &type($self->{srcPath});
+    $self->{mediaType} = &Util::type($self->{srcPath});
     bless $self, $class;
     return $self;
 }
