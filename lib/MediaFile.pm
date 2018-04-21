@@ -47,6 +47,7 @@ sub new {
     $self->{srcFilename} = $filename;
     $self->{srcSuffix} = $suffix;
     $self->{hasAdjustment} = undef;
+    $self->{mediaType} = &type($image->{srcPath});
     bless $self, $class;
     return $self;
 }
@@ -92,6 +93,8 @@ sub create_date {
             # create date is in the future and needs adjustment
             $LOG->logdie("Got a createDate in future, assume camera had wrong date.");
         }
+
+        $self->{createDate_iso8601} = $self->{createDate}->iso8601();
     } else {
         $LOG->debug("No createDate found in image [$image].");
     }
