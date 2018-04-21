@@ -42,14 +42,14 @@ sub calc_uuid {
     my $filepath = shift;
     my $filename = &basename($filepath);
     my $uuid = &create_uuid_as_string(UUID_V5, UUID_NS_URL, $filename);
-    $LOG->debug("calc_uuid($filename): [$uuid]");
+    $LOG->trace("calc_uuid($filename): [$uuid]");
     return $uuid;
 }
 
 sub calc_checksum {
     my $filename = shift;
 
-    $LOG->debug("checksum($filename)");
+    $LOG->trace("checksum($filename)");
 
     open my $fh, '<:raw', $filename
         or die "cannnot open $filename";
