@@ -3,6 +3,10 @@
 use strict;
 use warnings;
 
+use Log::Log4perl qw(get_logger);
+Log::Log4perl->init('./t/test_log4perl.conf');
+our $LOG = get_logger();
+
 use Config::IniFiles;
 
 my $env = $ENV{IMGSORTER_ENV};

@@ -3,7 +3,7 @@ use warnings;
 use lib '../lib';
 
 use Log::Log4perl qw(get_logger);
-Log::Log4perl->init('./test_log4perl.conf');
+Log::Log4perl->init('./t/test_log4perl.conf');
 our $LOG = get_logger();
 
 use Util;
