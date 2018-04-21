@@ -80,12 +80,12 @@ sub parse_date {
     $LOG->trace("format_date($date, [@fmts]) called.");
     
     for(@fmts) {
-	next 
-	    unless $_;
-	my $fmt = DateTime::Format::Strptime->new( pattern => $_ );
-	my $d = $fmt->parse_datetime($date);
-	return $d
-	    if($d);
+      next 
+          unless $_;
+      my $fmt = DateTime::Format::Strptime->new( pattern => $_ );
+      my $d = $fmt->parse_datetime($date);
+      return $d
+         if($d);
     }
 
     return undef;
@@ -122,11 +122,11 @@ sub is_before_now {
 sub trim {
     my $v = shift;
     if(defined $v) {
-	$v =~ s/^\s+//g;
-	$v =~ s/\s+$//g;
-	return length($v) > 0 ? $v : undef;
+  $v =~ s/^\s+//g;
+  $v =~ s/\s+$//g;
+  return length($v) > 0 ? $v : undef;
     } else {
-	return undef;
+  return undef;
     }
 }
 
