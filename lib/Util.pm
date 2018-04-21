@@ -29,7 +29,7 @@ sub is_image {
 
 sub type {
     my $file = shift;
-    my ($unused_1, $unused_2, $suffix) = &fileparse($_, qr/\.[^.]*/);
+    my ($unused_1, $unused_2, $suffix) = &fileparse($file, qr/\.[^.]*/);
     $suffix =~ s/^\.//;
     return 'photos'
         if grep(/$suffix/i, @image_extensions);
