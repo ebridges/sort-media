@@ -45,6 +45,21 @@ sub new {
     return $self;
 }
 
+sub update_workflow {
+    my $self = shift;
+    my $id = shift;
+    my $workflow = shift;
+
+    $LOG->debug("Updating image workflow: $id: $workflow");
+
+    $self->{dbh}->do(
+        "update ".IMAGE_INFO_TABLE." set workflow = ? where uuid = ?",
+        undef,
+        $workflow,
+        $id
+    );
+}
+
 sub save_image_info {
     my $self = shift;
     my $image = shift;

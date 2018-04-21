@@ -46,15 +46,20 @@ sub cmp_strings {
   print $result . "\n";  
 }
 
+sub cols {
+  return sprintf("%s,%s,%s,%s,%s,%s\r\n", ImageMetaInfoDB::DB_COLUMNS);
+}
+
 sub data_to_line {
   my $d = shift;
+  my $workflow = shift || ImageMetaInfoDB::SYNCHRONIZED;
   return sprintf("%s,%s,%s,%s,%s,%s\r\n",
     $d->{imageUri},
     $d->{uuid},
     $d->{createDate_iso8601},
     $d->{checkSum},
     $d->{mediaType},
-    ImageMetaInfoDB::SYNCHRONIZED
+    $workflow
   );
 }
 
@@ -63,7 +68,7 @@ sub reset_data_file {
   local(*TMP);
   open(TMP, ">$file")
     or die("Can't reset datafile: $file: $!\n");
-  print TMP join(',', ImageMetaInfoDB::DB_COLUMNS) . "\n";
+  print TMP &cols();
   close TMP;
 }
 
