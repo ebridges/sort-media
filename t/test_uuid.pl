@@ -3,7 +3,7 @@ use warnings;
 use lib '../lib';
 
 use Log::Log4perl qw(get_logger);
-Log::Log4perl->init('./test_log4perl.conf');
+Log::Log4perl->init('./t/test_log4perl.conf');
 our $LOG = get_logger();
 
 use Util;
@@ -18,7 +18,8 @@ my $actual_uuid = Util::calc_uuid($candidate_file);
 
 sub candidate_uuid {
     my $file = shift;
-    my $result = `uuid -v5 ns:URL $file`;
+    my $basename = `basename $file`;
+    my $result = `uuid -v5 ns:URL $basename`;
     chomp $result;
     return $result;
 }

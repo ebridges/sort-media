@@ -9,6 +9,9 @@ use DBD::CSV;
 
 use constant IMAGE_INFO_TABLE => 'media_info';
 use constant IMAGE_INFO_DB_EXT => '.csv';
+use constant SYNCHRONIZED => 'synchronized';
+use constant UPLOADED => 'uploaded';
+use constant DB_COLUMNS => qw(path uuid created csum type workflow );
 
 our $LOG = get_logger();
 
@@ -30,6 +33,10 @@ sub new {
         RaiseError => 1,
     }) or die "Cannot connect: $DBI::errstr";
 
+    $dbh->{csv_tables}{IMAGE_INFO_TABLE} = {
+        col_names => [DB_COLUMNS]
+    };
+
     my $self = {
         dbh => $dbh
     };
@@ -38,22 +45,40 @@ sub new {
     return $self;
 }
 
+sub update_workflow {
+    my $self = shift;
+    my $id = shift;
+    my $workflow = shift;
+
+    $LOG->debug("Updating image workflow: $id: $workflow");
+
+    $self->{dbh}->do(
+        "update ".IMAGE_INFO_TABLE." set workflow = ? where uuid = ?",
+        undef,
+        $workflow,
+        $id
+    );
+}
+
 sub save_image_info {
     my $self = shift;
     my $image = shift;
+    my $workflow = SYNCHRONIZED;
 
-    my $isodate = $image->{createDate}->iso8601();
-    my $csum = substr($image->{checkSum}, 0, 10);
-
-    $LOG->debug("Saving image info: $image->{imageUri}/$image->{uuid}/$isodate/$csum...");
+    if($LOG->is_debug()) {
+        my $csum = substr($image->{checkSum}, 0, 10);
+        $LOG->debug("Saving image info: $image->{imageUri}/$image->{uuid}/$image->{createDate_iso8601}/$csum...");
+    }
 
     $self->{dbh}->do(
-        "insert into ".IMAGE_INFO_TABLE." values (?, ?, ?, ?)",
+        "insert into ".IMAGE_INFO_TABLE." values (?, ?, ?, ?, ?, ?)",
         undef,
         $image->{imageUri},
         $image->{uuid},
-        $isodate,
-        $image->{checkSum}
+        $image->{createDate_iso8601},
+        $image->{checkSum},
+        $image->{mediaType},
+        $workflow
     );
 }
 
