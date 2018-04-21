@@ -7,6 +7,7 @@ use Cwd qw(getcwd);
 use File::Path  qw(make_path remove_tree);
 use Log::Log4perl qw(get_logger);
 use MediaFile;
+use Util;
 use Config::IniFiles;
 use POSIX qw/strftime/;
 use ImageMetaInfoDB;
@@ -95,7 +96,7 @@ IMAGE: for(@files) {
     }
 
     my $destination_dir = undef;
-    if($mediaFile->is_image()) {
+    if(&is_image($mediaFile->{srcPath})) {
         $destination_dir = $COPY_IMAGE_DESTINATION;
     } else {
         $destination_dir = $COPY_VIDEO_DESTINATION;

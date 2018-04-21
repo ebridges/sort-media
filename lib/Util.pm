@@ -9,6 +9,7 @@ use DateTime::Format::Strptime;
 use File::Basename;
 use Digest::SHA;
 use UUID::Tiny ':std';
+use File::Basename 'fileparse';
 
 use Log::Log4perl qw(get_logger);
 
@@ -17,6 +18,25 @@ our $LOG = get_logger();
 ## Difference between Macintosh Epoch time (number of seconds since midnight, January 1, 1904 GMT)
 ## and Unix epoch time (seconds since 1/1/1970)
 use constant EPOCH_DIFF => 2082844800;
+
+my @image_extensions = qw(.jpeg .jpg .png);
+my @video_extensions = qw(.mp4 .avi .mov);
+
+sub is_image {
+    my $srcPath = shift;
+    return &type($srcPath) eq 'photos';
+}
+
+sub type {
+    my $file = shift;
+    my ($unused_1, $unused_2, $suffix) = &fileparse($_, qr/\.[^.]*/);
+    $suffix =~ s/^\.//;
+    return 'photos'
+        if grep(/$suffix/i, @image_extensions);
+    return 'videos'
+        if grep(/$suffix/i, @video_extensions);
+    return undef;
+}
 
 sub calc_uuid {
     my $filepath = shift;

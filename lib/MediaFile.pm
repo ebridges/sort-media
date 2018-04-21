@@ -18,8 +18,6 @@ use constant CURRENT_DATE => '2012-09-04T23:20:00'; # 1346815200
 
 our $LOG = get_logger();
 
-my @valid_extensions = qw(.jpeg .jpg .JPEG .JPG .mp4 .MP4 .avi .AVI .mov .MOV .png .PNG .3gp .3GP);
-my @image_extensions = qw(.jpeg .jpg .png);
 
 # look for these tags in this order
 my @created_tags = (
@@ -45,6 +43,9 @@ sub new {
     my $self = {
         srcPath => shift,
     };
+    my ($filename, $directories, $suffix) = fileparse($self->{srcPath}, qr/\.[^.]*/);
+    $self->{srcFilename} = $filename;
+    $self->{srcSuffix} = $suffix;
     $self->{hasAdjustment} = undef;
     bless $self, $class;
     return $self;
@@ -52,23 +53,12 @@ sub new {
 
 sub validate {
     my $self = shift;
-    my ($filename, $directories, $suffix) = fileparse($self->{srcPath}, qr/\.[^.]*/);
-    if(grep {/$suffix/} @valid_extensions) {
-        $self->{srcFilename} = $filename;
-        $self->{srcSuffix} = $suffix;
+    my $type = &type($self->{srcPath});
+    if($type) {
         return 1;
+    } else {
+        return undef;
     }
-    undef;
-}
-
-sub is_image {
-    my $self = shift;
-    my ($filename, $directories, $suffix) = fileparse($self->{srcPath}, qr/\.[^.]*/);
-    $suffix = lc($suffix);
-    if(grep {/$suffix/} @image_extensions) {
-        return 1;
-    }
-    undef;
 }
 
 # Returns a DateTime object representing the creation date of the image.
