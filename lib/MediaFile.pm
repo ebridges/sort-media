@@ -54,7 +54,7 @@ sub new {
 
 sub validate {
     my $self = shift;
-    my $type = &type($self->{srcPath});
+    my $type = &Util::type($self->{srcPath});
     if($type) {
         return 1;
     } else {
