@@ -6,7 +6,6 @@ use warnings;
 use DateTime;
 use DateTime::Format::ISO8601;
 use DateTime::Format::Strptime;
-use File::Basename;
 use Digest::SHA;
 use UUID::Tiny ':std';
 use File::Basename 'fileparse';
