@@ -8,7 +8,7 @@ use DateTime::Format::ISO8601;
 use DateTime::Format::Strptime;
 use Digest::SHA;
 use UUID::Tiny ':std';
-use File::Basename 'fileparse';
+use File::Basename qw(fileparse basename);
 
 use Log::Log4perl qw(get_logger);
 
