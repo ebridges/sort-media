@@ -18,7 +18,8 @@ my $actual_uuid = Util::calc_uuid($candidate_file);
 
 sub candidate_uuid {
     my $file = shift;
-    my $result = `uuid -v5 ns:URL $file`;
+    my $basename = `basename $file`;
+    my $result = `uuid -v5 ns:URL $basename`;
     chomp $result;
     return $result;
 }
