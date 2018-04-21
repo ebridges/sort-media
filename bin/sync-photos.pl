@@ -96,7 +96,7 @@ IMAGE: for(@files) {
     }
 
     my $destination_dir = undef;
-    if(&is_image($mediaFile->{srcPath})) {
+    if(&Util::is_image($mediaFile->{srcPath})) {
         $destination_dir = $COPY_IMAGE_DESTINATION;
     } else {
         $destination_dir = $COPY_VIDEO_DESTINATION;
