@@ -55,27 +55,27 @@ assert( defined($date_5), 'unable to parse ' . DATE_05 );
 
 my $date_6 = Util::parse_date(DATE_06, @dateformats);
 #$LOG->trace("date_06: $date_6");
-assert( not (defined($date_6)), 'error: unable to parse ' . DATE_06 );
+assert( (not defined($date_6)), 'error: should not be able to parse ' . DATE_06);
 
 my $date_7 = Util::parse_date(DATE_07, @dateformats);
 #$LOG->trace("date_07: $date_7");
-assert( not (defined($date_7)), 'error: unable to parse ' . DATE_07 );
+assert( defined($date_7), 'error: unable to parse ' . DATE_07 );
 
 my $date_8 = Util::parse_date(DATE_08, @dateformats);
 #$LOG->trace("date_08: $date_8");
-assert( not (defined($date_8)), 'error: unable to parse ' . DATE_08 );
+assert( defined($date_8), 'error: unable to parse ' . DATE_08 );
 
 my $date_9 = Util::parse_date(DATE_09, @dateformats);
 #$LOG->trace("date_09: $date_9");
-assert( not (defined($date_9)), 'error: unable to parse ' . DATE_09 );
+assert( defined($date_9), 'error: unable to parse ' . DATE_09 );
 
 my $date_10 = Util::parse_date(DATE_10, @dateformats);
 #$LOG->trace("date_10: $date_10");
-assert( not (defined($date_10)), 'error: unable to parse ' . DATE_10 );
+assert( (not defined($date_10)), 'error: should not be able to parse ' . DATE_10 );
 
 my $date_11 = Util::parse_date(DATE_11, @dateformats);
 #$LOG->trace("date_11: $date_11");
-assert( not (defined($date_11)), 'error: unable to parse ' . DATE_11 );
+assert( defined($date_11), 'error: unable to parse ' . DATE_11 );
 
 sub assert {
     my $bool = shift;
