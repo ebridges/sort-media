@@ -6,3 +6,5 @@ Image::ExifTool
 Log::Log4perl
 UUID::Tiny
 DBD::CSV
+LWP::Authen::OAuth
+JSON

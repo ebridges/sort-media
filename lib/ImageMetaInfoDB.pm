@@ -45,6 +45,15 @@ sub new {
     return $self;
 }
 
+sub query_by_workflow {
+    my $self = shift;
+    my $workflow = shift;
+
+    my $sth = $self->{dbh}->prepare("SELECT * FROM ".IMAGE_INFO_TABLE." WHERE workflow = ?");
+    $sth->execute($workflow);
+    return $self->{dbh}->selectall_hashref($sth, 'path');
+}
+
 sub update_workflow {
     my $self = shift;
     my $id = shift;
