@@ -51,7 +51,7 @@ sub calc_checksum {
     $LOG->trace("checksum($filename)");
 
     open my $fh, '<:raw', $filename
-        or die "cannnot open $filename";
+        or die "cannnot open $filename: $!";
 
     my $sha = Digest::SHA->new(512);
     $sha->addfile($fh);
