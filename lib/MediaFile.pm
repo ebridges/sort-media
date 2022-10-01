@@ -86,6 +86,11 @@ sub create_date {
             $t = &Util::parse_date($dateString, @dateformats);
         }
 
+        if (not $t) {
+            warn("Unable to parse DateTime from [$dateString].");
+            return undef;
+        }
+
         if(&Util::is_before_now($t)) {
             # i.e.: create date is not in the future
             $self->{createDate} = $t;
